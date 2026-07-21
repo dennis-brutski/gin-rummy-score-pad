@@ -378,7 +378,7 @@ function KnockHint() {
 // ────────────────────────────────────────────────────────────────
 function MenuSheet({
   onClose, onExit, onStats, onExport, onImport,
-  rules, onSetRules,
+  rules, onSetRules, lockTarget,
   theme, resolvedTheme, onSetTheme,
 }) {
   const { t } = useT();
@@ -393,7 +393,7 @@ function MenuSheet({
 
         <MenuDivider />
         {rules && onSetRules && (
-          <RulesEditor rules={rules} onSet={onSetRules} />
+          <RulesEditor rules={rules} onSet={onSetRules} lockTarget={lockTarget} />
         )}
 
         <MenuDivider />
@@ -701,13 +701,15 @@ export { ThemePicker, LanguagePicker, RulesEditor, Stepper };
 // Used in RulesEditor to keep bonus values mobile-friendly without an
 // on-screen keyboard. Holds bounds; clamps on out-of-range.
 // ─────────────────────────────────────────────────────────────────────────
-function Stepper({ value, min, max, step, onChange, modified }) {
+function Stepper({ value, min, max, step, onChange, modified, disabled }) {
   const dec = () => {
+    if (disabled) return;
     haptic(3);
     const v = Math.max(min, value - step);
     if (v !== value) onChange(v);
   };
   const inc = () => {
+    if (disabled) return;
     haptic(3);
     const v = Math.min(max, value + step);
     if (v !== value) onChange(v);
@@ -730,16 +732,16 @@ function Stepper({ value, min, max, step, onChange, modified }) {
       padding: 2,
       transition: 'background 160ms ease, border-color 160ms ease',
     }}>
-      <button className="press" onClick={dec} disabled={value <= min} aria-label="-"
-              style={btnStyle(value <= min)}>−</button>
+      <button className="press" onClick={dec} disabled={disabled || value <= min} aria-label="-"
+              style={btnStyle(disabled || value <= min)}>−</button>
       <span className="num" style={{
         minWidth: 44, textAlign: 'center',
         color: modified ? 'var(--brass)' : 'var(--parchment)',
         fontSize: 17,
         fontFamily: 'var(--serif)', fontWeight: modified ? 600 : 500,
       }}>{value}</span>
-      <button className="press" onClick={inc} disabled={value >= max} aria-label="+"
-              style={btnStyle(value >= max)}>+</button>
+      <button className="press" onClick={inc} disabled={disabled || value >= max} aria-label="+"
+              style={btnStyle(disabled || value >= max)}>+</button>
     </div>
   );
 }
@@ -750,12 +752,15 @@ function Stepper({ value, min, max, step, onChange, modified }) {
 // to multiples of `step` so the user can't end up with awkward 27-point
 // bonuses. A "Reset to defaults" link below restores the standard ruleset.
 // ─────────────────────────────────────────────────────────────────────────
-function RulesEditor({ rules, onSet }) {
+function RulesEditor({ rules, onSet, lockTarget }) {
   const { t } = useT();
   const r = { ...DEFAULT_RULES, ...rules };
   const set = (k, v) => onSet({ ...r, [k]: v });
   const resetOne = (k) => { haptic(6); set(k, DEFAULT_RULES[k]); };
-  const reset = () => { haptic(8); onSet({ ...DEFAULT_RULES }); };
+  const reset = () => {
+    haptic(8);
+    onSet({ ...DEFAULT_RULES, ...(lockTarget ? { target: r.target } : {}) });
+  };
   const fields = [
     { key: 'target',        label: t('targetScore'),        min: 50, max: 500, step: 25 },
     { key: 'ginBonus',      label: t('ginBonusLabel'),       min:  0, max: 100, step:  5 },
@@ -801,8 +806,9 @@ function RulesEditor({ rules, onSet }) {
         {fields.map((f, i) => {
           const def = DEFAULT_RULES[f.key];
           const modified = r[f.key] !== def;
+          const locked = f.key === 'target' && !!lockTarget;
           return (
-            <div key={f.key} style={{
+            <div key={f.key} data-testid={'rule-' + f.key} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '8px 0',
               borderBottom: i < fields.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
@@ -824,7 +830,7 @@ function RulesEditor({ rules, onSet }) {
                     }} />
                   )}
                 </div>
-                {modified && (
+                {modified && !locked && (
                   <button
                     onClick={() => resetOne(f.key)}
                     className="press"
@@ -841,10 +847,17 @@ function RulesEditor({ rules, onSet }) {
                     {t('defaultWas', def)} · {t('reset')}
                   </button>
                 )}
+                {locked && (
+                  <div style={{
+                    fontFamily: 'var(--sans)', fontSize: 10.5, fontStyle: 'italic',
+                    color: 'rgba(255,255,255,0.45)', marginTop: 2,
+                  }}>{t('targetLocked')}</div>
+                )}
               </div>
               <Stepper
                 value={r[f.key]} min={f.min} max={f.max} step={f.step}
                 modified={modified}
+                disabled={locked}
                 onChange={(v) => set(f.key, v)} />
             </div>
           );

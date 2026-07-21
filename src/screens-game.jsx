@@ -81,6 +81,7 @@ function GameScreen({ store, game, onScore, onUndo, onExit, onStats,
           onImport={() => { setMenuOpen(false); onImport(); }}
           rules={game.rules}
           onSetRules={onSetRules}
+          lockTarget={game.hands.length > 0}
           theme={theme} resolvedTheme={resolvedTheme} onSetTheme={onSetTheme} />
       )}
       {editingHand && (

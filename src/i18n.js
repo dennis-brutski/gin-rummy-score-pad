@@ -212,6 +212,7 @@ const dict = {
     gameBonusLabel: "Game bonus",
     shutoutBonusLabel: "Shutout bonus",
     resetToDefaults: "Reset to defaults",
+    targetLocked: "Locked during play",
   
     dangerZone: "Danger Zone",
     deleteAllData: "Delete all data",
@@ -393,6 +394,7 @@ const dict = {
     gameBonusLabel: "Spielbonus",
     shutoutBonusLabel: "Schwarz-Bonus",
     resetToDefaults: "Zurücksetzen auf Standard",
+    targetLocked: "Während des Spiels gesperrt",
   
     dangerZone: "Achtung",
     deleteAllData: "Alle Daten löschen",
@@ -574,6 +576,7 @@ const dict = {
     gameBonusLabel: "Бонус за игру",
     shutoutBonusLabel: "Бонус «всухую»",
     resetToDefaults: "Сбросить к стандартным",
+    targetLocked: "Заблокировано во время игры",
   
     dangerZone: "Опасная зона",
     deleteAllData: "Удалить все данные",
@@ -755,6 +758,7 @@ const dict = {
     gameBonusLabel: "Bono de partida",
     shutoutBonusLabel: "Bono de pleno",
     resetToDefaults: "Restablecer valores",
+    targetLocked: "Bloqueado durante la partida",
   
     dangerZone: "Zona peligrosa",
     deleteAllData: "Eliminar todos los datos",
@@ -936,6 +940,7 @@ const dict = {
     gameBonusLabel: "Bonus de partie",
     shutoutBonusLabel: "Bonus blanchissage",
     resetToDefaults: "Valeurs par défaut",
+    targetLocked: "Verrouillé pendant la partie",
   
     dangerZone: "Zone sensible",
     deleteAllData: "Effacer toutes les données",
@@ -1117,6 +1122,7 @@ const dict = {
     gameBonusLabel: "Bônus de partida",
     shutoutBonusLabel: "Bônus de limpeza",
     resetToDefaults: "Restaurar padrões",
+    targetLocked: "Bloqueado durante o jogo",
   
     dangerZone: "Zona de perigo",
     deleteAllData: "Apagar todos os dados",
@@ -1298,6 +1304,7 @@ const dict = {
     gameBonusLabel: "Bonus partita",
     shutoutBonusLabel: "Bonus cappotto",
     resetToDefaults: "Ripristina predefiniti",
+    targetLocked: "Bloccato durante la partita",
   
     dangerZone: "Zona pericolosa",
     deleteAllData: "Cancella tutti i dati",
@@ -1479,6 +1486,7 @@ const dict = {
     gameBonusLabel: "整局奖励",
     shutoutBonusLabel: "零胜奖励",
     resetToDefaults: "恢复默认",
+    targetLocked: "对局中锁定",
   
     dangerZone: "危险操作",
     deleteAllData: "删除所有数据",
@@ -1660,6 +1668,7 @@ const dict = {
     gameBonusLabel: "ゲームボーナス",
     shutoutBonusLabel: "完封ボーナス",
     resetToDefaults: "初期値に戻す",
+    targetLocked: "プレイ中はロック",
   
     dangerZone: "危険な操作",
     deleteAllData: "すべてのデータを削除",
