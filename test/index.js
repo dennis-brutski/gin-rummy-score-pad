@@ -1,1 +1,2 @@
-// Test suite entry point - placeholder
+// Test entry point
+import './unit/scoring.test.js';
