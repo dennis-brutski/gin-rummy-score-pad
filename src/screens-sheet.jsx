@@ -306,7 +306,7 @@ function PointEntry({ winnerName, type, points, setPoints, rules, onBack, onConf
           {(() => {
             const raw = t('earnsPts', winnerName, total);
             if (Array.isArray(raw)) {
-              return <>{raw[0]}<span style={{ color: 'var(--brass)' }} className="num">{raw[2]}</span>{raw[3]}</>;
+              return <>{raw[0]}{raw[1]}<span style={{ color: 'var(--brass)' }} className="num">{raw[2]}</span>{raw[3]}</>;
             }
             return raw;
           })()}

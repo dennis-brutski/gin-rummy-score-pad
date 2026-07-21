@@ -226,8 +226,11 @@ function Ledger({ game, names, onPickHand }) {
 
   if (game.hands.length === 0) {
     const ctaText = t('scoreThisHand');
-    const raw = t('ledgerEmptyHint', ' CTA ');
-    const parts = (typeof raw === 'string' ? raw : '').split(' CTA ');
+    // dict.en's ledgerEmptyHint returns [prefix, ctaText, suffix] directly
+    // (unlike tapNewGameHint, it doesn't take a marker to split) — pass the
+    // real ctaText and consume the array positionally instead of splitting.
+    const raw = t('ledgerEmptyHint', ctaText);
+    const parts = Array.isArray(raw) ? raw : ['', ctaText, ''];
     return (
       <div className="parchment" style={{
         flex: 1, minHeight: 0,
@@ -243,7 +246,7 @@ function Ledger({ game, names, onPickHand }) {
         <div style={{
           fontSize: 11, color: 'var(--ink-faint)', textAlign: 'center',
           maxWidth: 220, lineHeight: 1.5, marginTop: 2,
-        }}>{parts[0]}<span style={{ color: 'var(--brass-deep)', fontWeight: 600 }}>{ctaText}</span>{parts[1]}</div>
+        }}>{parts[0]}<span style={{ color: 'var(--brass-deep)', fontWeight: 600 }}>{parts[1]}</span>{parts[2]}</div>
       </div>
     );
   }

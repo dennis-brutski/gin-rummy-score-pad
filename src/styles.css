@@ -64,6 +64,8 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+#root { height: 100vh; height: 100dvh; }
+
 /* Stage — leather/walnut surround for the phone */
 .stage {
   min-height: 100vh;
