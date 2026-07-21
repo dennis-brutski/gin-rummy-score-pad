@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Gin Rummy · The Counter</title>
+
+  <!-- PWA: install-to-home-screen support. Works when the file is hosted
+       at an https origin; on file:// most browsers ignore the manifest. -->
+  <meta name="theme-color" content="#1f3327" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Gin Rummy" />
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Gin Rummy Counter","short_name":"Gin Rummy","description":"A pocket score pad for two-player gin rummy.","start_url":".","display":"standalone","orientation":"portrait","background_color":"%231a1612","theme_color":"%231f3327","icons":[{"src":"data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%2296%22 fill=%22%232f4a37%22/%3E%3Ctext x=%22256%22 y=%22310%22 text-anchor=%22middle%22 font-family=%22Georgia,serif%22 font-size=%22280%22 font-weight=%22500%22 fill=%22%23f3ead5%22%3E%E2%99%A0%3C/text%3E%3C/svg%3E","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}' />
+  <link rel="apple-touch-icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"><rect width="180" height="180" rx="34" fill="%232f4a37"/><text x="90" y="115" text-anchor="middle" font-family="Georgia,serif" font-size="110" font-weight="500" fill="%23f3ead5">♠</text></svg>' />
+  <link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%232f4a37"/><text x="16" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="%23d4a850">♠</text></svg>' type="image/svg+xml" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script>
+    // Best-effort: register a minimal service worker so the app can be
+    // installed and run offline on hosted origins. We construct it from a
+    // Blob URL so the whole thing stays self-contained. Browsers refuse
+    // SW registration on file:// — that's fine, we just skip in that case.
+    (function () {
+      try {
+        if (!('serviceWorker' in navigator)) return;
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+        const sw = [
+          "self.addEventListener('install', e => self.skipWaiting());",
+          "self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));",
+          // Cache the navigation response on first visit, serve from cache
+          // afterwards. The single-file app means there's nothing else to
+          // intercept.
+          "const CACHE = 'gr-counter-v1';",
+          "self.addEventListener('fetch', e => {",
+          "  if (e.request.mode !== 'navigate') return;",
+          "  e.respondWith((async () => {",
+          "    try {",
+          "      const fresh = await fetch(e.request);",
+          "      const cache = await caches.open(CACHE);",
+          "      cache.put(e.request, fresh.clone());",
+          "      return fresh;",
+          "    } catch (err) {",
+          "      const cached = await caches.match(e.request);",
+          "      return cached || Response.error();",
+          "    }",
+          "  })());",
+          "});",
+        ].join('\n');
+        const url = URL.createObjectURL(new Blob([sw], { type: 'application/javascript' }));
+        navigator.serviceWorker.register(url).catch(() => {});
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div id="frame-mount"></div>
+  </div>
+
+  <template id="__bundler_thumbnail" data-bg-color="#1f3327">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#2f4a37" />
+      <rect x="90" y="90" width="1020" height="620" rx="16" fill="none" stroke="#d4a850" stroke-width="4" />
+      <text x="600" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="380" font-weight="500" fill="#f3ead5">&#9824;</text>
+    </svg>
+  </template>
+
+  <!-- Modules, in dependency order -->
+  <script type="text/babel" src="ui.jsx"></script>
+  <script type="text/babel" src="i18n.jsx"></script>
+  <script type="text/babel" src="state.jsx"></script>
+  <script type="text/babel" src="screens-home.jsx"></script>
+  <script type="text/babel" src="screens-setup.jsx"></script>
+  <script type="text/babel" src="screens-game.jsx"></script>
+  <script type="text/babel" src="screens-sheet.jsx"></script>
+  <script type="text/babel" src="screens-winner.jsx"></script>
+  <script type="text/babel" src="screens-stats.jsx"></script>
+  <script type="text/babel" src="app.jsx"></script>
+
+  <script type="text/babel" data-presets="react">
+    // Mount: render App in a plain rounded "card" — no phone chrome, no
+    // fake status bar. On a tall enough viewport (≥ device height) we cap
+    // the card to the mobile size (402×874) and center it on a dark
+    // walnut stage; on shorter viewports we let it fill the screen edge to
+    // edge so the felt becomes the page background.
+    const root = ReactDOM.createRoot(document.getElementById('frame-mount'));
+
+    const DEVICE_W = 402, DEVICE_H = 874;
+
+    function Shell() {
+      const [bounded, setBounded] = React.useState(true);
+      React.useEffect(() => {
+        const fit = () => {
+          // Card form (rounded, drop shadow) when the viewport is roomy
+          // enough to letterbox; otherwise full-bleed for phones.
+          const roomy = window.innerWidth >= 520 && window.innerHeight >= 720;
+          setBounded(roomy);
+        };
+        fit();
+        window.addEventListener('resize', fit);
+        return () => window.removeEventListener('resize', fit);
+      }, []);
+
+      if (!bounded) {
+        // Full-bleed: the body's .stage is hidden and the App takes the
+        // whole screen.
+        return (
+          <div style={{
+            position: 'fixed', inset: 0,
+            display: 'flex', alignItems: 'stretch', justifyContent: 'stretch',
+          }}>
+            <App />
+          </div>
+        );
+      }
+      return (
+        <div style={{
+          width: DEVICE_W, height: DEVICE_H,
+          borderRadius: 28,
+          overflow: 'hidden',
+          boxShadow:
+            '0 1px 0 rgba(255,255,255,0.04) inset,' +
+            '0 30px 60px rgba(0,0,0,0.55),' +
+            '0 0 0 1px rgba(0,0,0,0.45)',
+          background: '#000',
+          position: 'relative',
+        }}>
+          <App />
+        </div>
+      );
+    }
+
+    root.render(<Shell />);
+  </script>
+</body>
+</html>
