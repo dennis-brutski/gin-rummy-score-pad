@@ -48,6 +48,24 @@ const LEGACY_RULES = {
   shutoutBonus:  100,
 };
 
+// Stepper bounds from the Rules editor — used to clamp imported values.
+const RULE_BOUNDS = {
+  target: [50, 500], ginBonus: [0, 100], longGinBonus: [0, 100],
+  undercutBonus: [0, 100], boxBonus: [0, 50], gameBonus: [0, 250], shutoutBonus: [0, 300],
+};
+
+// Sanitize a rules object field-by-field over a fallback set. Non-numeric
+// values keep the fallback; numeric ones are clamped to the stepper bounds.
+function cleanRules(r, fallback) {
+  const out = { ...fallback };
+  if (!r || typeof r !== 'object') return out;
+  for (const k of Object.keys(RULE_BOUNDS)) {
+    const v = Number(r[k]);
+    if (Number.isFinite(v)) out[k] = Math.min(RULE_BOUNDS[k][1], Math.max(RULE_BOUNDS[k][0], v));
+  }
+  return out;
+}
+
 const rulesOf = (g) => ({ ...DEFAULT_RULES, ...(g?.rules || {}) });
 
 // ── id helpers ────────────────────────────────────────────────────────────
@@ -423,6 +441,7 @@ function parseImportJSON(text) {
   const clean = {
     ...initialStore(),
     theme: ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto',
+    rules: cleanRules(s.rules, DEFAULT_RULES),
     players: s.players.filter((p) => p && p.id && p.name).map((p) => ({
       id: String(p.id), name: String(p.name).slice(0, 24),
       createdAt: Number(p.createdAt) || Date.now(),
@@ -437,7 +456,7 @@ function parseImportJSON(text) {
       hands:  Array.isArray(g.hands) ? g.hands.filter(Boolean).map((h) => ({
         id: String(h.id || rid('h_')),
         deal: Number(h.deal) || 1,
-        type: ['knock','gin','undercut'].includes(h.type) ? h.type : 'knock',
+        type: ['knock','gin','longGin','undercut'].includes(h.type) ? h.type : 'knock',
         winner: h.winner === 1 ? 1 : 0,
         points: Number(h.points) || 0,
         totalThisHand: Number(h.totalThisHand) || 0,
@@ -446,6 +465,7 @@ function parseImportJSON(text) {
       dealerStart: g.dealerStart === 1 ? 1 : 0,
       phase: g.phase === 'finished' ? 'finished' : 'playing',
       winner: g.winner === 0 || g.winner === 1 ? g.winner : null,
+      rules: cleanRules(g.rules, LEGACY_RULES),
     })),
     activeGameId: null,    // always land on home on import
     view: 'home',
@@ -460,7 +480,7 @@ function activeGame(store)       { return findGame(store, store.activeGameId); }
 function gamePlayers(store, g)   { return [findPlayer(store, g.p0Id), findPlayer(store, g.p1Id)]; }
 
 export {
-  TARGET_SCORE, DEFAULT_RULES, LEGACY_RULES, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
+  TARGET_SCORE, DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
