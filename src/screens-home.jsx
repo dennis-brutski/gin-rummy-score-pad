@@ -256,8 +256,8 @@ function EmptyState() {
   // text styled as brass. Translator returns a hint with the CTA marker
   // already substituted; we split on it to insert a styled <span>.
   const ctaText = t('newGame');
-  const raw = t('tapNewGameHint', ' CTA ');
-  const parts = (typeof raw === 'string' ? raw : '').split(' CTA ');
+  const raw = t('tapNewGameHint', '\u0000CTA\u0000');
+  const parts = (typeof raw === 'string' ? raw : '').split('\u0000CTA\u0000');
   return (
     <div style={{
       padding: '36px 18px 18px',
