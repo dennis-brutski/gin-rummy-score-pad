@@ -37,7 +37,7 @@ build.mjs     esbuild script → dist/ (static, deployable anywhere)
 - `state.jsx` becomes `state.js` with ES module exports (it contains no JSX). All other files keep JSX and are compiled by esbuild. `Object.assign(window, …)` globals are replaced with imports/exports.
 - React and ReactDOM come from npm and are bundled — no CDN, so the app works offline from first launch.
 - Fonts (Cormorant Garamond, DM Sans; woff2, latin + latin-ext + cyrillic subsets) are bundled locally via `@font-face`. CJK locales fall back to system fonts.
-- The prototype's data-URL manifest and Blob-URL service worker become real files: `manifest.json` (name, icons, `display: standalone`, theme color) and a cache-first `sw.js` that precaches the built assets and serves them offline.
+- The prototype's data-URL manifest and Blob-URL service worker become real files: `manifest.json` (name, icons, `display: standalone`, theme color) and a stale-while-revalidate `sw.js` that precaches the built assets and serves them offline.
 - Persistence stays `localStorage` under `gr-counter.v2`, including the existing v1 migration path.
 - Output is a static `dist/` folder; any static host works (GitHub Pages assumed).
 

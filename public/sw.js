@@ -13,17 +13,18 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Cache-first; successful network responses are added to the cache so
-// fonts/icons requested after install also work offline.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then((hit) => hit || fetch(e.request).then((res) => {
-      if (res.ok) {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy));
-      }
-      return res;
-    }))
+    caches.match(e.request).then((hit) => {
+      const refresh = fetch(e.request).then((res) => {
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copy));
+        }
+        return res;
+      }).catch(() => hit);
+      return hit || refresh;
+    })
   );
 });
