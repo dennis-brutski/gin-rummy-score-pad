@@ -6,7 +6,7 @@
 
 **Architecture:** The prototype's files are ported nearly verbatim into `src/` as ES modules (the `Object.assign(window, …)` globals become imports/exports), bundled by esbuild into a static `dist/`. The pure state layer gets `node:test` unit + behavior suites; Playwright drives a small mobile-viewport e2e suite. Three known bugs are fixed with regression tests.
 
-**Tech Stack:** React 18, esbuild, `node:test` (Node ≥ 20; dev machine has v25), `@playwright/test` (Chromium only).
+**Tech Stack:** React 19, esbuild, `node:test` (Node ≥ 20; dev machine has v25), `@playwright/test` (Chromium only).
 
 **Spec:** `docs/superpowers/specs/2026-07-21-gin-rummy-pwa-design.md`. The prototype source of truth is `handoff/` — keep it untouched as reference.
 

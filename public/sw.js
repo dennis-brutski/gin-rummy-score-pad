@@ -1,5 +1,16 @@
 const CACHE = 'gr-v1';
-const CORE = ['./', './index.html', './app.js', './styles.css', './manifest.json'];
+const CORE = [
+  './', './index.html', './app.js', './styles.css', './manifest.json',
+  './fonts/cormorant-garamond-v21-cyrillic_latin_latin-ext-500italic.woff2',
+  './fonts/cormorant-garamond-v21-cyrillic_latin_latin-ext-500.woff2',
+  './fonts/cormorant-garamond-v21-cyrillic_latin_latin-ext-600italic.woff2',
+  './fonts/cormorant-garamond-v21-cyrillic_latin_latin-ext-600.woff2',
+  './fonts/dm-sans-v17-latin_latin-ext-500.woff2',
+  './fonts/dm-sans-v17-latin_latin-ext-600.woff2',
+  './fonts/dm-sans-v17-latin_latin-ext-700.woff2',
+  './fonts/dm-sans-v17-latin_latin-ext-regular.woff2',
+  './icons/icon-192.png', './icons/icon-512.png',
+];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -23,8 +34,9 @@ self.addEventListener('fetch', (e) => {
           caches.open(CACHE).then((c) => c.put(e.request, copy));
         }
         return res;
-      }).catch(() => hit);
-      return hit || refresh;
+      });
+      e.waitUntil(refresh.catch(() => {}));
+      return hit || refresh.catch(() => hit || Response.error());
     })
   );
 });

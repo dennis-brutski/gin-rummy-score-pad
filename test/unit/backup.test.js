@@ -50,6 +50,13 @@ test('games without rules fall back to legacy rules', () => {
   assert.deepEqual(store.games[0].rules, { ...LEGACY_RULES });
 });
 
+test('store without rules falls back to default rules', () => {
+  const s = sampleStore();
+  delete s.rules;
+  const { store } = parseImportJSON(exportStoreJSON(s));
+  assert.deepEqual(store.rules, { ...DEFAULT_RULES });
+});
+
 test('imported rules are sanitized and clamped to stepper bounds', () => {
   const s = sampleStore();
   s.games[0].rules = { target: 10, ginBonus: 'abc', gameBonus: 9999 };
