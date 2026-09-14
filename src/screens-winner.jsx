@@ -4,6 +4,7 @@ import React from 'react';
 import { useT } from './i18n.js';
 import { Crest, haptic } from './ui.jsx';
 import { gamePlayers } from './state.js';
+import { Ledger } from './screens-game.jsx';
 
 const { useEffect: useEW } = React;
 
@@ -44,25 +45,36 @@ function WinnerScreen({ store, game, summary, onPlayAgain, onHome }) {
         <Crest>{t('theGameIsWon')}</Crest>
       </div>
 
-      <div style={{ flex: 0.4 }} />
+      <div style={{ height: 14 }} />
 
       <div className="pop" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <div className="eyebrow" style={{ color: 'var(--brass)', fontSize: 11, letterSpacing: '0.22em' }}>
           {t('theWinner')}
         </div>
         <div className="display" style={{
-          fontSize: 64, lineHeight: 0.95, marginTop: 12,
+          fontSize: 44, lineHeight: 0.95, marginTop: 8,
           color: 'var(--parchment)',
           letterSpacing: '0.005em',
           textShadow: '0 2px 0 rgba(0,0,0,0.5), 0 0 40px rgba(255,220,150,0.2)',
         }}>{names[winner]}</div>
         <div className="display" style={{
           fontFamily: 'var(--serif)', fontStyle: 'italic',
-          fontSize: 22, color: 'var(--brass)', marginTop: 12,
+          fontSize: 18, color: 'var(--brass)', marginTop: 6,
         }}>{shutout ? t('takesTheGameShutout') : t('takesTheGame')}</div>
       </div>
 
-      <div style={{ flex: 0.4 }} />
+      <div style={{ height: 14 }} />
+
+      {/* Hand-by-hand history; fills the leftover height and scrolls. No
+          onPickHand, so a finished game can't be edited from here. */}
+      <div style={{
+        flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column',
+        position: 'relative', zIndex: 1,
+      }}>
+        <Ledger game={game} names={names} />
+      </div>
+
+      <div style={{ height: 12 }} />
 
       {/* Scorecard */}
       <div className="parchment" style={{
@@ -107,7 +119,7 @@ function WinnerScreen({ store, game, summary, onPlayAgain, onHome }) {
         </div>
       </div>
 
-      <div style={{ flex: 0.2 }} />
+      <div style={{ height: 14 }} />
 
       <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
         <button className="btn-outline press" onClick={() => { haptic(6); onHome(); }}

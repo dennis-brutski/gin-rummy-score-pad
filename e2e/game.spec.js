@@ -11,6 +11,9 @@ test('happy path: three hands to a finished game with correct tally', async ({ p
   await expect(page.getByText('50').first()).toBeVisible();
   await recordHand(page, { winner: 'Mira', outcome: 'Knock', digits: ['9', '0'] }); // 110 → win
   await expect(page.getByText(/the winner/i)).toBeVisible();
+  // Winner screen lists how the game progressed, hand by hand.
+  await expect(page.getByText('+50')).toBeVisible();
+  await expect(page.getByText('+90')).toBeVisible();
   // Final tally: 110 board + 100 game + 2 boxes × 20 = 250; loser 50 + 20 = 70
   await expect(page.getByText('250').first()).toBeVisible();
   await expect(page.getByText('70').first()).toBeVisible();
