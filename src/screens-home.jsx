@@ -5,7 +5,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { BrassRule, Suit, haptic } from './ui.jsx';
-import { APP_VERSION, gamePlayers } from './state.js';
+import { APP_VERSION, DEFAULT_RULES, gamePlayers } from './state.js';
 import { Sheet, ThemePicker, LanguagePicker, RulesEditor, MenuDivider, MenuRow } from './screens-sheet.jsx';
 
 const { useState: useSH } = React;
@@ -181,7 +181,7 @@ function SettingsSheet({ onClose, onExport, onImport, onWipeAll, rules, onSetRul
 
         {/* About — static info block, no actions */}
         <MenuDivider />
-        <AboutBlock />
+        <AboutBlock rules={rules} />
       </div>
     </Sheet>
   );
@@ -192,7 +192,7 @@ function SettingsSheet({ onClose, onExport, onImport, onWipeAll, rules, onSetRul
 // Settings so app-store privacy/about requirements have a surface to point
 // at. APP_VERSION is wired to a single constant in state.jsx.
 // ────────────────────────────────────────────────────────────────
-function AboutBlock() {
+function AboutBlock({ rules }) {
   const { t } = useT();
   return (
     <div style={{
@@ -233,7 +233,7 @@ function AboutBlock() {
       <div className="num" style={{
         fontSize: 9.5, color: 'rgba(255,255,255,0.32)',
         marginTop: 10, letterSpacing: '0.18em', textTransform: 'uppercase',
-      }}>{t('scoringLegend')}</div>
+      }}>{t('scoringLegend', { ...DEFAULT_RULES, ...rules })}</div>
     </div>
   );
 }

@@ -24,7 +24,7 @@ test('all screens render without runtime errors', async ({ page }) => {
   await page.getByRole('button', { name: 'Score this Hand' }).click(); // ScoreSheet step 1
   await page.getByRole('button', { name: 'Mira' }).click();            // step 2 (outcomes render)
   // OutcomeCard buttons render ornament+label+blurb+chevron as one
-  // accessible name (e.g. "♠ Gin Went out with zero deadwood. +25 bonus. ›"),
+  // accessible name (e.g. "♠ Gin Went out with zero deadwood. +20 bonus. ›"),
   // so an exact "Gin"/"Knock" name never matches; match a unique substring.
   await expect(page.getByRole('button', { name: /♠ Gin/ })).toBeVisible();
   await page.getByRole('button', { name: /♣ Knock/ }).click(); // step 3 (keypad)

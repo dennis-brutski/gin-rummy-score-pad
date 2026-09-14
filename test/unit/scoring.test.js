@@ -16,10 +16,10 @@ test('knock scores raw points, no bonus', () => {
   assert.equal(g.winner, null);
 });
 
-test('gin adds ginBonus (25)', () => {
+test('gin adds ginBonus (20)', () => {
   const g = applyHandToGame(fresh(), { type: 'gin', winner: 0, points: 20 });
-  assert.equal(g.hands[0].totalThisHand, 45);
-  assert.deepEqual(g.scores, [45, 0]);
+  assert.equal(g.hands[0].totalThisHand, 40);
+  assert.deepEqual(g.scores, [40, 0]);
 });
 
 test('longGin adds longGinBonus (25)', () => {
@@ -28,9 +28,9 @@ test('longGin adds longGinBonus (25)', () => {
   assert.deepEqual(g.scores, [0, 45]);
 });
 
-test('undercut adds undercutBonus (25)', () => {
+test('undercut adds undercutBonus (10)', () => {
   const g = applyHandToGame(fresh(), { type: 'undercut', winner: 1, points: 15 });
-  assert.equal(g.hands[0].totalThisHand, 40);
+  assert.equal(g.hands[0].totalThisHand, 25);
 });
 
 test('legacy rules use undercut +10', () => {

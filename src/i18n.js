@@ -79,7 +79,7 @@ const dict = {
     manage: 'Manage',
     done: 'Done',
     dealTheCards: 'Deal the Cards',
-    rulesShort: '100 to win  ·  Gin +25  ·  Undercut +10  ·  Box +25',
+    rulesShort: (r) => `${r.target} to win  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Box +${r.boxBonus}`,
     playerNumber: (rom) => `Player ${rom}`,
     backToGamesShort: '← Games',
 
@@ -110,8 +110,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Laid down with deadwood. Score the difference of deadwood.',
-    ginBlurb: 'Went out with zero deadwood. +25 bonus.',
-    undercutBlurb: 'Opponent knocked, but defender had less deadwood. +10 bonus.',
+    ginBlurb: (b) => `Went out with zero deadwood. +${b} bonus.`,
+    undercutBlurb: (b) => `Opponent knocked, but defender had less deadwood. +${b} bonus.`,
     promptKnock: "Difference between the two players' deadwood points",
     promptGin: "Total deadwood points left in the opponent's hand",
     promptUndercut: "Difference between the two players' deadwood points",
@@ -155,7 +155,7 @@ const dict = {
     language: 'Language',
     languageSystem: 'Use system language',
     standardScoring: 'Standard scoring · 100 to win',
-    scoringLegend: 'Gin +25 · Undercut +10 · Box +25 · Game +100 · Shutout +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Box +${r.boxBonus} · Game +${r.gameBonus} · Shutout +${r.shutoutBonus}`,
     settings: 'Settings',
 
     // Winner
@@ -166,7 +166,6 @@ const dict = {
     finalTally: 'Final Tally',
     pointsOnBoard: 'Points on board',
     gameBonus: 'Game bonus',
-    boxesRow: (w, l) => `Boxes ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Shutout bonus',
     totalRow: 'Total',
     winsBy: (name, diff, hands) =>
@@ -227,7 +226,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Ginned with an extra card in hand. +25 bonus.",
+    longGinBlurb: (b) => `Ginned with an extra card in hand. +${b} bonus.`,
     longGinBonusLabel: "Long gin bonus",
   
     longGinSuffix: "long",
@@ -268,7 +267,7 @@ const dict = {
     manage: 'Verwalten',
     done: 'Fertig',
     dealTheCards: 'Karten geben',
-    rulesShort: '100 zum Sieg  ·  Gin +25  ·  Undercut +10  ·  Box +25',
+    rulesShort: (r) => `${r.target} zum Sieg  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Box +${r.boxBonus}`,
     playerNumber: (rom) => `Spieler ${rom}`,
     backToGamesShort: '← Spiele',
 
@@ -297,8 +296,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Aufgenommen mit Restpunkten. Punktedifferenz zählt.',
-    ginBlurb: 'Komplett raus, null Restpunkte. +25 Bonus.',
-    undercutBlurb: 'Gegner klopfte, aber Verteidiger hatte weniger Punkte. +10 Bonus.',
+    ginBlurb: (b) => `Komplett raus, null Restpunkte. +${b} Bonus.`,
+    undercutBlurb: (b) => `Gegner klopfte, aber Verteidiger hatte weniger Punkte. +${b} Bonus.`,
     promptKnock: 'Differenz der Restpunkte zwischen den Spielern',
     promptGin: 'Verbleibende Restpunkte beim Gegner',
     promptUndercut: 'Differenz der Restpunkte zwischen den Spielern',
@@ -340,7 +339,7 @@ const dict = {
     language: 'Sprache',
     languageSystem: 'Systemsprache verwenden',
     standardScoring: 'Standardwertung · 100 zum Sieg',
-    scoringLegend: 'Gin +25 · Undercut +10 · Box +25 · Spiel +100 · Schwarz +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Box +${r.boxBonus} · Spiel +${r.gameBonus} · Schwarz +${r.shutoutBonus}`,
     settings: 'Einstellungen',
 
     theGameIsWon: 'Das Spiel ist entschieden',
@@ -350,7 +349,6 @@ const dict = {
     finalTally: 'Endabrechnung',
     pointsOnBoard: 'Punkte am Brett',
     gameBonus: 'Spielbonus',
-    boxesRow: (w, l) => `Boxen ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Schwarz-Bonus',
     totalRow: 'Summe',
     winsBy: (name, diff, hands) =>
@@ -409,7 +407,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Gin mit einer Extra-Karte in der Hand. +25 Bonus.",
+    longGinBlurb: (b) => `Gin mit einer Extra-Karte in der Hand. +${b} Bonus.`,
     longGinBonusLabel: "Long-Gin-Bonus",
   
     longGinSuffix: "lang",
@@ -450,7 +448,7 @@ const dict = {
     manage: 'Изменить',
     done: 'Готово',
     dealTheCards: 'Раздать карты',
-    rulesShort: '100 для победы · Джин +25 · Подрезка +10 · Бокс +25',
+    rulesShort: (r) => `${r.target} для победы · Джин +${r.ginBonus} · Подрезка +${r.undercutBonus} · Бокс +${r.boxBonus}`,
     playerNumber: (rom) => `Игрок ${rom}`,
     backToGamesShort: '← Игры',
 
@@ -479,8 +477,8 @@ const dict = {
     gin: 'Джин',
     undercut: 'Подрезка',
     knockBlurb: 'Сложился с мусором. Считается разница очков.',
-    ginBlurb: 'Все десять карт в комбинациях. Бонус +25.',
-    undercutBlurb: 'Соперник постучал, у защитника меньше мусора. Бонус +10.',
+    ginBlurb: (b) => `Все десять карт в комбинациях. Бонус +${b}.`,
+    undercutBlurb: (b) => `Соперник постучал, у защитника меньше мусора. Бонус +${b}.`,
     promptKnock: 'Разница очков мусора между игроками',
     promptGin: 'Сумма очков мусора в руке соперника',
     promptUndercut: 'Разница очков мусора между игроками',
@@ -522,7 +520,7 @@ const dict = {
     language: 'Язык',
     languageSystem: 'Язык устройства',
     standardScoring: 'Стандартный счёт · 100 для победы',
-    scoringLegend: 'Джин +25 · Подрезка +10 · Бокс +25 · Игра +100 · Без побед +100',
+    scoringLegend: (r) => `Джин +${r.ginBonus} · Подрезка +${r.undercutBonus} · Бокс +${r.boxBonus} · Игра +${r.gameBonus} · Без побед +${r.shutoutBonus}`,
     settings: 'Настройки',
 
     theGameIsWon: 'Игра окончена',
@@ -532,7 +530,6 @@ const dict = {
     finalTally: 'Итоговый счёт',
     pointsOnBoard: 'Очки на столе',
     gameBonus: 'Бонус за игру',
-    boxesRow: (w, l) => `Боксы ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Бонус «всухую»',
     totalRow: 'Итого',
     winsBy: (name, diff, hands) =>
@@ -591,7 +588,7 @@ const dict = {
   
     longGin: "Лонг-джин",
     typeLongGin: "ЛОНГ ДЖИН",
-    longGinBlurb: "Джин с лишней картой в руке. Бонус +25.",
+    longGinBlurb: (b) => `Джин с лишней картой в руке. Бонус +${b}.`,
     longGinBonusLabel: "Бонус за лонг-джин",
   
     longGinSuffix: "лонг",
@@ -632,7 +629,7 @@ const dict = {
     manage: 'Gestionar',
     done: 'Hecho',
     dealTheCards: 'Repartir',
-    rulesShort: '100 para ganar  ·  Gin +25  ·  Undercut +10  ·  Caja +25',
+    rulesShort: (r) => `${r.target} para ganar  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Caja +${r.boxBonus}`,
     playerNumber: (rom) => `Jugador ${rom}`,
     backToGamesShort: '← Partidas',
 
@@ -661,8 +658,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Bajó con puntos sobrantes. Cuenta la diferencia.',
-    ginBlurb: 'Todas las cartas combinadas. Bono +25.',
-    undercutBlurb: 'El rival hizo knock pero el defensor tenía menos puntos. Bono +10.',
+    ginBlurb: (b) => `Todas las cartas combinadas. Bono +${b}.`,
+    undercutBlurb: (b) => `El rival hizo knock pero el defensor tenía menos puntos. Bono +${b}.`,
     promptKnock: 'Diferencia de puntos sobrantes entre los dos',
     promptGin: 'Puntos sobrantes en la mano del rival',
     promptUndercut: 'Diferencia de puntos sobrantes entre los dos',
@@ -704,7 +701,7 @@ const dict = {
     language: 'Idioma',
     languageSystem: 'Idioma del sistema',
     standardScoring: 'Puntuación estándar · 100 para ganar',
-    scoringLegend: 'Gin +25 · Undercut +10 · Caja +25 · Partida +100 · Pleno +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Caja +${r.boxBonus} · Partida +${r.gameBonus} · Pleno +${r.shutoutBonus}`,
     settings: 'Ajustes',
 
     theGameIsWon: 'La partida está ganada',
@@ -714,7 +711,6 @@ const dict = {
     finalTally: 'Cuenta final',
     pointsOnBoard: 'Puntos en juego',
     gameBonus: 'Bono de partida',
-    boxesRow: (w, l) => `Cajas ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Bono de pleno',
     totalRow: 'Total',
     winsBy: (name, diff, hands) =>
@@ -773,7 +769,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Gin con una carta extra en la mano. Bono +25.",
+    longGinBlurb: (b) => `Gin con una carta extra en la mano. Bono +${b}.`,
     longGinBonusLabel: "Bono de Long Gin",
   
     longGinSuffix: "largos",
@@ -814,7 +810,7 @@ const dict = {
     manage: 'Gérer',
     done: 'OK',
     dealTheCards: 'Distribuer',
-    rulesShort: '100 pour gagner  ·  Gin +25  ·  Undercut +10  ·  Boîte +25',
+    rulesShort: (r) => `${r.target} pour gagner  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Boîte +${r.boxBonus}`,
     playerNumber: (rom) => `Joueur ${rom}`,
     backToGamesShort: '← Parties',
 
@@ -843,8 +839,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Étalé avec des cartes mortes. On compte l’écart.',
-    ginBlurb: 'Toutes les cartes combinées. Bonus +25.',
-    undercutBlurb: 'L’adversaire a fait knock mais le défenseur avait moins. Bonus +10.',
+    ginBlurb: (b) => `Toutes les cartes combinées. Bonus +${b}.`,
+    undercutBlurb: (b) => `L’adversaire a fait knock mais le défenseur avait moins. Bonus +${b}.`,
     promptKnock: 'Différence de points morts entre les deux joueurs',
     promptGin: 'Points morts restant dans la main adverse',
     promptUndercut: 'Différence de points morts entre les deux joueurs',
@@ -886,7 +882,7 @@ const dict = {
     language: 'Langue',
     languageSystem: 'Langue du système',
     standardScoring: 'Score standard · 100 pour gagner',
-    scoringLegend: 'Gin +25 · Undercut +10 · Boîte +25 · Partie +100 · Blanchissage +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Boîte +${r.boxBonus} · Partie +${r.gameBonus} · Blanchissage +${r.shutoutBonus}`,
     settings: 'Réglages',
 
     theGameIsWon: 'La partie est gagnée',
@@ -896,7 +892,6 @@ const dict = {
     finalTally: 'Bilan final',
     pointsOnBoard: 'Points marqués',
     gameBonus: 'Bonus de partie',
-    boxesRow: (w, l) => `Boîtes ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Bonus blanchissage',
     totalRow: 'Total',
     winsBy: (name, diff, hands) =>
@@ -955,7 +950,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Gin avec une carte de plus en main. Bonus +25.",
+    longGinBlurb: (b) => `Gin avec une carte de plus en main. Bonus +${b}.`,
     longGinBonusLabel: "Bonus Long Gin",
   
     longGinSuffix: "longs",
@@ -996,7 +991,7 @@ const dict = {
     manage: 'Gerir',
     done: 'Pronto',
     dealTheCards: 'Distribuir',
-    rulesShort: '100 para ganhar  ·  Gin +25  ·  Undercut +10  ·  Caixa +25',
+    rulesShort: (r) => `${r.target} para ganhar  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Caixa +${r.boxBonus}`,
     playerNumber: (rom) => `Jogador ${rom}`,
     backToGamesShort: '← Partidas',
 
@@ -1025,8 +1020,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Baixou com pontos. Conta a diferença.',
-    ginBlurb: 'Saiu sem pontos. Bônus +25.',
-    undercutBlurb: 'O adversário fez knock mas tinha menos pontos. Bônus +10.',
+    ginBlurb: (b) => `Saiu sem pontos. Bônus +${b}.`,
+    undercutBlurb: (b) => `O adversário fez knock mas tinha menos pontos. Bônus +${b}.`,
     promptKnock: 'Diferença de pontos entre os jogadores',
     promptGin: 'Pontos restantes na mão do adversário',
     promptUndercut: 'Diferença de pontos entre os jogadores',
@@ -1068,7 +1063,7 @@ const dict = {
     language: 'Idioma',
     languageSystem: 'Idioma do sistema',
     standardScoring: 'Pontuação padrão · 100 para vencer',
-    scoringLegend: 'Gin +25 · Undercut +10 · Caixa +25 · Partida +100 · Limpeza +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Caixa +${r.boxBonus} · Partida +${r.gameBonus} · Limpeza +${r.shutoutBonus}`,
     settings: 'Definições',
 
     theGameIsWon: 'A partida está vencida',
@@ -1078,7 +1073,6 @@ const dict = {
     finalTally: 'Contagem final',
     pointsOnBoard: 'Pontos em jogo',
     gameBonus: 'Bônus de partida',
-    boxesRow: (w, l) => `Caixas ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Bônus de limpeza',
     totalRow: 'Total',
     winsBy: (name, diff, hands) =>
@@ -1137,7 +1131,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Gin com uma carta extra na mão. Bônus +25.",
+    longGinBlurb: (b) => `Gin com uma carta extra na mão. Bônus +${b}.`,
     longGinBonusLabel: "Bônus de Long Gin",
   
     longGinSuffix: "longos",
@@ -1178,7 +1172,7 @@ const dict = {
     manage: 'Gestisci',
     done: 'Fatto',
     dealTheCards: 'Distribuisci',
-    rulesShort: '100 per vincere  ·  Gin +25  ·  Undercut +10  ·  Box +25',
+    rulesShort: (r) => `${r.target} per vincere  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Box +${r.boxBonus}`,
     playerNumber: (rom) => `Giocatore ${rom}`,
     backToGamesShort: '← Partite',
 
@@ -1207,8 +1201,8 @@ const dict = {
     gin: 'Gin',
     undercut: 'Undercut',
     knockBlurb: 'Posato con scarti. Si conta la differenza di scarti.',
-    ginBlurb: 'Tutte le carte in combinazione. Bonus +25.',
-    undercutBlurb: 'L’avversario ha bussato, ma il difensore aveva meno scarti. Bonus +10.',
+    ginBlurb: (b) => `Tutte le carte in combinazione. Bonus +${b}.`,
+    undercutBlurb: (b) => `L’avversario ha bussato, ma il difensore aveva meno scarti. Bonus +${b}.`,
     promptKnock: 'Differenza di punti di scarto tra i giocatori',
     promptGin: 'Punti di scarto rimasti all’avversario',
     promptUndercut: 'Differenza di punti di scarto tra i giocatori',
@@ -1250,7 +1244,7 @@ const dict = {
     language: 'Lingua',
     languageSystem: 'Lingua di sistema',
     standardScoring: 'Punteggio standard · 100 per vincere',
-    scoringLegend: 'Gin +25 · Undercut +10 · Box +25 · Partita +100 · Cappotto +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Box +${r.boxBonus} · Partita +${r.gameBonus} · Cappotto +${r.shutoutBonus}`,
     settings: 'Impostazioni',
 
     theGameIsWon: 'La partita è vinta',
@@ -1260,7 +1254,6 @@ const dict = {
     finalTally: 'Conteggio finale',
     pointsOnBoard: 'Punti sul tavolo',
     gameBonus: 'Bonus partita',
-    boxesRow: (w, l) => `Box ${w} × 25  /  ${l} × 25`,
     shutoutBonus: 'Bonus cappotto',
     totalRow: 'Totale',
     winsBy: (name, diff, hands) =>
@@ -1319,7 +1312,7 @@ const dict = {
   
     longGin: "Long Gin",
     typeLongGin: "LONG GIN",
-    longGinBlurb: "Gin con una carta in più in mano. Bonus +25.",
+    longGinBlurb: (b) => `Gin con una carta in più in mano. Bonus +${b}.`,
     longGinBonusLabel: "Bonus Long Gin",
   
     longGinSuffix: "lunghi",
@@ -1360,7 +1353,7 @@ const dict = {
     manage: '管理',
     done: '完成',
     dealTheCards: '发牌',
-    rulesShort: '满 100 胜  ·  Gin +25  ·  Undercut +10  ·  局奖 +25',
+    rulesShort: (r) => `满 ${r.target} 胜  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  局奖 +${r.boxBonus}`,
     playerNumber: (rom) => `玩家 ${rom}`,
     backToGamesShort: '← 对局',
 
@@ -1389,8 +1382,8 @@ const dict = {
     gin: 'Gin',
     undercut: '反胜',
     knockBlurb: '带剩牌敲下。计算分差。',
-    ginBlurb: '所有牌成组,无剩牌。+25 奖励。',
-    undercutBlurb: '对手敲牌,但防守方剩牌更少。+10 奖励。',
+    ginBlurb: (b) => `所有牌成组,无剩牌。+${b} 奖励。`,
+    undercutBlurb: (b) => `对手敲牌,但防守方剩牌更少。+${b} 奖励。`,
     promptKnock: '两位玩家剩牌点数之差',
     promptGin: '对手手中剩牌总分',
     promptUndercut: '两位玩家剩牌点数之差',
@@ -1432,7 +1425,7 @@ const dict = {
     language: '语言',
     languageSystem: '系统语言',
     standardScoring: '标准记分 · 满 100 胜',
-    scoringLegend: 'Gin +25 · 反胜 +10 · 局奖 +25 · 整局 +100 · 零胜 +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · 反胜 +${r.undercutBonus} · 局奖 +${r.boxBonus} · 整局 +${r.gameBonus} · 零胜 +${r.shutoutBonus}`,
     settings: '设置',
 
     theGameIsWon: '本局已胜',
@@ -1442,7 +1435,6 @@ const dict = {
     finalTally: '终局结算',
     pointsOnBoard: '场上得分',
     gameBonus: '整局奖励',
-    boxesRow: (w, l) => `局奖 ${w} × 25  /  ${l} × 25`,
     shutoutBonus: '零胜奖励',
     totalRow: '合计',
     winsBy: (name, diff, hands) =>
@@ -1501,7 +1493,7 @@ const dict = {
   
     longGin: "长Gin",
     typeLongGin: "长GIN",
-    longGinBlurb: "手中多一张牌的Gin。+25奖励。",
+    longGinBlurb: (b) => `手中多一张牌的Gin。+${b}奖励。`,
     longGinBonusLabel: "长Gin奖励",
   
     longGinSuffix: "长",
@@ -1542,7 +1534,7 @@ const dict = {
     manage: '管理',
     done: '完了',
     dealTheCards: 'カードを配る',
-    rulesShort: '100 で勝ち  ·  Gin +25  ·  Undercut +10  ·  Box +25',
+    rulesShort: (r) => `${r.target} で勝ち  ·  Gin +${r.ginBonus}  ·  Undercut +${r.undercutBonus}  ·  Box +${r.boxBonus}`,
     playerNumber: (rom) => `プレイヤー ${rom}`,
     backToGamesShort: '← 対局',
 
@@ -1571,8 +1563,8 @@ const dict = {
     gin: 'ジン',
     undercut: 'アンダーカット',
     knockBlurb: '不要札を残してノック。差分が得点。',
-    ginBlurb: '不要札ゼロで上がり。+25 ボーナス。',
-    undercutBlurb: '相手のノックに対し、守り手の不要札が少なかった。+10 ボーナス。',
+    ginBlurb: (b) => `不要札ゼロで上がり。+${b} ボーナス。`,
+    undercutBlurb: (b) => `相手のノックに対し、守り手の不要札が少なかった。+${b} ボーナス。`,
     promptKnock: '両者の不要札の差',
     promptGin: '相手の手札の不要札合計',
     promptUndercut: '両者の不要札の差',
@@ -1614,7 +1606,7 @@ const dict = {
     language: '言語',
     languageSystem: '端末の言語',
     standardScoring: '標準ルール · 100で勝ち',
-    scoringLegend: 'Gin +25 · Undercut +10 · Box +25 · ゲーム +100 · 完封 +100',
+    scoringLegend: (r) => `Gin +${r.ginBonus} · Undercut +${r.undercutBonus} · Box +${r.boxBonus} · ゲーム +${r.gameBonus} · 完封 +${r.shutoutBonus}`,
     settings: '設定',
 
     theGameIsWon: '勝負あり',
@@ -1624,7 +1616,6 @@ const dict = {
     finalTally: '最終集計',
     pointsOnBoard: '盤上の得点',
     gameBonus: 'ゲームボーナス',
-    boxesRow: (w, l) => `ボックス ${w} × 25  /  ${l} × 25`,
     shutoutBonus: '完封ボーナス',
     totalRow: '合計',
     winsBy: (name, diff, hands) =>
@@ -1683,7 +1674,7 @@ const dict = {
   
     longGin: "ロング・ジン",
     typeLongGin: "ロング・ジン",
-    longGinBlurb: "手札に1枚余分でジン。+25 ボーナス。",
+    longGinBlurb: (b) => `手札に${b}枚余分でジン。+25 ボーナス。`,
     longGinBonusLabel: "ロング・ジン・ボーナス",
   
     longGinSuffix: "ロング",

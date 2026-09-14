@@ -8,14 +8,14 @@ import {
 const played = () => {
   let g = newGame('a', 'b');
   g = applyHandToGame(g, { type: 'knock', winner: 0, points: 20 });
-  g = applyHandToGame(g, { type: 'gin', winner: 1, points: 30 });   // b: 55
+  g = applyHandToGame(g, { type: 'gin', winner: 1, points: 30 });   // b: 50
   g = applyHandToGame(g, { type: 'knock', winner: 0, points: 15 }); // a: 35
   return g;
 };
 
 test('undo reverts last hand, scores, boxes, deal', () => {
   const g = undoLastHand(played());
-  assert.deepEqual(g.scores, [20, 55]);
+  assert.deepEqual(g.scores, [20, 50]);
   assert.deepEqual(g.boxes, [1, 1]);
   assert.equal(g.hands.length, 2);
   assert.equal(g.deal, 3);

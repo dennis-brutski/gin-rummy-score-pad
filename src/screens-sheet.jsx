@@ -118,19 +118,19 @@ function ScoreSheet({ players, deal, rules, onClose, onConfirm }) {
             onPick={() => { haptic(8); setType('knock'); setStep(3); }} />
           <OutcomeCard
             label={t('gin')}
-            blurb={t('ginBlurb')}
+            blurb={t('ginBlurb', r.ginBonus)}
             ornament="♠"
             highlight
             onPick={() => { haptic(8); setType('gin'); setStep(3); }} />
           <OutcomeCard
             label={t('longGin')}
-            blurb={t('longGinBlurb')}
+            blurb={t('longGinBlurb', r.longGinBonus)}
             ornament="♣"
             highlight
             onPick={() => { haptic(8); setType('longGin'); setStep(3); }} />
           <OutcomeCard
             label={t('undercut')}
-            blurb={t('undercutBlurb')}
+            blurb={t('undercutBlurb', r.undercutBonus)}
             ornament="♦"
             ornamentColor="var(--claret-soft)"
             onPick={() => { haptic(8); setType('undercut'); setStep(3); }} />

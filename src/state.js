@@ -26,12 +26,13 @@ const APP_VERSION  = '1.0.0';
 // a snapshot so historical games keep their original math even if the global
 // defaults change later. The store also carries a global `rules` field that
 // new games inherit.
+// Defaults follow Hoyle / Bicycle / pagat (gin 20, undercut 10, box 20).
 const DEFAULT_RULES = {
   target:        100,
-  ginBonus:       25,
+  ginBonus:       20,
   longGinBonus:   25,
-  undercutBonus:  25,
-  boxBonus:       25,
+  undercutBonus:  10,
+  boxBonus:       20,
   gameBonus:     100,
   shutoutBonus:  100,
 };
