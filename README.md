@@ -51,6 +51,12 @@ Open the live link, then:
 
 After the first visit it works without a connection.
 
+## Updates
+
+The app updates itself; there's nothing to reinstall. When a new version has been deployed, the app downloads it in the background and shows **New version available · Reload**. Tap *Reload* to switch right away — a game in progress is kept, since everything is saved as you play — or dismiss it with ✕ and the update applies the next time the app is fully closed. An installed app also checks for updates each time you bring it back to the foreground.
+
+For developers: `npm run build` stamps `dist/sw.js` with a hash of the app files (`app.js`, `styles.css`, `index.html`, `manifest.json`, `sw.js`). Only a change to those files counts as a new version, so a README-only push doesn't prompt anyone. Fonts and icons aren't part of the hash — give a replacement a new file name.
+
 ## Development
 
 ```sh
