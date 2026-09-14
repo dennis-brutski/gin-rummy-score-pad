@@ -20,6 +20,22 @@ import { StatsScreen } from './screens-stats.jsx';
 
 const { useState: useSA, useEffect: useEA } = React;
 
+const toastStyle = {
+  position: 'absolute', left: '50%', bottom: 26,
+  transform: 'translateX(-50%)', zIndex: 200,
+  background: 'rgba(0,0,0,0.78)',
+  color: 'var(--parchment)',
+  fontFamily: 'var(--serif)', fontSize: 14,
+  padding: '10px 18px', borderRadius: 999,
+  border: '1px solid var(--brass-deep)',
+  maxWidth: '80%', textAlign: 'center',
+  boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+};
+const toastButtonStyle = {
+  appearance: 'none', background: 'none', border: 'none', padding: 0,
+  font: 'inherit', fontWeight: 600, color: 'var(--brass)', cursor: 'pointer',
+};
+
 function App() {
   const [store, setStore] = useSA(() => loadStore());
   useEA(() => { saveStore(store); }, [store]);
@@ -50,6 +66,37 @@ function App() {
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2800);
+  };
+
+  // ── app updates ────────────────────────────────────────────────────────
+  // A new deploy installs a service worker that waits (see sw.js). While an
+  // older one still controls the page, offer a reload.
+  const [waitingWorker, setWaitingWorker] = useSA(null);
+  useEA(() => {
+    if (!('serviceWorker' in navigator)) return;
+    const sws = navigator.serviceWorker;
+    let reg;
+    const offer = (w) => { if (w && sws.controller) setWaitingWorker(w); };
+    const watch = (w) => w?.addEventListener('statechange', () => {
+      if (w.state === 'installed') offer(w);
+    });
+    sws.register('./sw.js').then((r) => {
+      reg = r;
+      offer(r.waiting);
+      watch(r.installing);
+      r.addEventListener('updatefound', () => watch(r.installing));
+    }).catch(() => {});
+    // Installed PWAs can sit in memory for days; check again when reopened.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') reg?.update().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, []);
+  // The store is saved on every change, so reloading mid-game is safe.
+  const applyUpdate = () => {
+    navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once: true });
+    waitingWorker.postMessage('skipWaiting');
   };
 
   // ── navigation ─────────────────────────────────────────────────────────
@@ -236,17 +283,20 @@ function App() {
 
       {/* Toast */}
       {toast && (
-        <div className="fade" style={{
-          position: 'absolute', left: '50%', bottom: 26,
-          transform: 'translateX(-50%)', zIndex: 200,
-          background: 'rgba(0,0,0,0.78)',
-          color: 'var(--parchment)',
-          fontFamily: 'var(--serif)', fontSize: 14,
-          padding: '10px 18px', borderRadius: 999,
-          border: '1px solid var(--brass-deep)',
-          maxWidth: '80%', textAlign: 'center',
-          boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
-        }}>{toast}</div>
+        <div className="fade" style={toastStyle}>{toast}</div>
+      )}
+      {waitingWorker && (
+        <div className="fade" role="status" style={{
+          ...toastStyle, bottom: toast ? 76 : 26,
+          display: 'flex', alignItems: 'center', gap: 14,
+        }}>
+          <span>{t('updateAvailable')}</span>
+          <button className="press" onClick={applyUpdate} style={toastButtonStyle}>
+            {t('reload')}
+          </button>
+          <button className="press" onClick={() => setWaitingWorker(null)}
+                  aria-label={t('cancel')} style={{ ...toastButtonStyle, opacity: 0.6 }}>✕</button>
+        </div>
       )}
     </div>
     </LocaleContext.Provider>

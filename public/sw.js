@@ -1,4 +1,6 @@
-const CACHE = 'gr-v1';
+// build.mjs replaces 'gr-dev' with a content hash, so every deploy that
+// changes the app installs as a new version and the page can offer a reload.
+const CACHE = 'gr-dev';
 const CORE = [
   './', './index.html', './app.js', './styles.css', './manifest.json',
   './fonts/cormorant-garamond-v21-cyrillic_latin_latin-ext-500italic.woff2',
@@ -12,8 +14,15 @@ const CORE = [
   './icons/icon-192.png', './icons/icon-512.png',
 ];
 
+// No skipWaiting here: a new version waits until the user taps Reload.
+// cache: 'reload' bypasses the HTTP cache so a new version never stores stale files.
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) =>
+    c.addAll(CORE.map((url) => new Request(url, { cache: 'reload' })))));
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'skipWaiting') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
@@ -24,19 +33,8 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Cache-first: one version is served as a whole until the next one activates.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((hit) => {
-      const refresh = fetch(e.request).then((res) => {
-        if (res.ok) {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
-        }
-        return res;
-      });
-      e.waitUntil(refresh.catch(() => {}));
-      return hit || refresh.catch(() => hit || Response.error());
-    })
-  );
+  e.respondWith(caches.match(e.request).then((hit) => hit || fetch(e.request)));
 });
