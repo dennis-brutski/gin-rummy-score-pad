@@ -7,7 +7,8 @@
     "build": "node build.mjs",
     "test": "node --test",
     "e2e": "npm run build && playwright test",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "screenshots": "npm run build && node scripts/screenshots.mjs"
   },
   "dependencies": {
     "react": "^19.2.7",
