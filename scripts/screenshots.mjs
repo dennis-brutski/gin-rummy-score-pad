@@ -23,7 +23,7 @@ try {
   browser = await chromium.launch();
   const context = await browser.newContext({
     // ponytail: 1× keeps the committed PNGs small; bump for crisper retina shots.
-    ...devices['Pixel 5'], deviceScaleFactor: 1, baseURL: BASE, locale: 'en-US',
+    ...devices['Pixel 5'], deviceScaleFactor: 1, baseURL: BASE, locale: 'en-US', colorScheme: 'dark',
   });
   const page = await context.newPage();
   // Let sheet animations settle before capturing.
@@ -32,14 +32,14 @@ try {
     await page.screenshot({ path: `${OUT}/${name}.png` });
   };
 
-  await startGame(page);
-  await recordHand(page, { winner: 'Mira', outcome: 'Knock', digits: ['2', '3'] });
+  await startGame(page, 'Dennis', 'Theo');
+  await recordHand(page, { winner: 'Dennis', outcome: 'Knock', digits: ['2', '3'] });
   await recordHand(page, { winner: 'Theo', outcome: 'Gin', digits: ['3', '1'] });
-  await recordHand(page, { winner: 'Mira', outcome: 'Undercut', digits: ['1', '2'] });
+  await recordHand(page, { winner: 'Dennis', outcome: 'Undercut', digits: ['1', '2'] });
   await shot('game');
 
   await page.getByRole('button', { name: 'Score this Hand' }).click();
-  await page.getByRole('button', { name: 'Mira' }).click();
+  await page.getByRole('button', { name: 'Dennis' }).click();
   await shot('outcome');
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
 
@@ -48,7 +48,7 @@ try {
   await shot('rules');
   await page.getByRole('button', { name: 'Done', exact: true }).click();
 
-  await recordHand(page, { winner: 'Mira', outcome: 'Knock', digits: ['7', '0'] }); // Mira passes 100
+  await recordHand(page, { winner: 'Dennis', outcome: 'Knock', digits: ['7', '0'] }); // Dennis passes 100
   await shot('winner');
 
   await page.getByRole('button', { name: /Home/ }).first().click();
