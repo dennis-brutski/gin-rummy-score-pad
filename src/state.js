@@ -413,6 +413,10 @@ function renamePlayerInStore(store, id, name) {
   };
 }
 
+// Locale codes offered in src/i18n.js (LANGUAGES). Kept here so state.js
+// stays free of React; test/unit/locales.test.js checks they match.
+const LOCALE_CODES = ['en', 'de', 'ru', 'es', 'fr', 'pt', 'it', 'zh', 'ja'];
+
 // ── export / import ──────────────────────────────────────────────────────
 // JSON backup of the whole store. We add a `kind` marker so we can be
 // confident on import that we're looking at our own data and not some other
@@ -442,6 +446,7 @@ function parseImportJSON(text) {
   const clean = {
     ...initialStore(),
     theme: ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto',
+    locale: LOCALE_CODES.includes(s.locale) ? s.locale : 'auto',
     rules: cleanRules(s.rules, DEFAULT_RULES),
     players: s.players.filter((p) => p && p.id && p.name).map((p) => ({
       id: String(p.id), name: String(p.name).slice(0, 24),
@@ -487,6 +492,6 @@ export {
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
   recomputeGame, editHandInGame, deleteHandInGame, dealerOf, applyRulesToGame,
   computeHeadToHead, renamePlayerInStore,
-  exportStoreJSON, parseImportJSON,
+  exportStoreJSON, parseImportJSON, LOCALE_CODES,
   findPlayer, findGame, activeGame, gamePlayers,
 };

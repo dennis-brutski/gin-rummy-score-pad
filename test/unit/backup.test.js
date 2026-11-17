@@ -65,3 +65,17 @@ test('imported rules are sanitized and clamped to stepper bounds', () => {
   assert.equal(store.games[0].rules.ginBonus, 25);     // non-numeric → legacy fallback
   assert.equal(store.games[0].rules.gameBonus, 250);   // clamped down
 });
+
+test('round-trip preserves the language setting', () => {
+  for (const locale of ['de', 'ja', 'auto']) {
+    const { store } = parseImportJSON(exportStoreJSON({ ...sampleStore(), locale }));
+    assert.equal(store.locale, locale);
+  }
+});
+
+test('unknown or missing language falls back to auto on import', () => {
+  for (const locale of ['xx', 42, null, undefined]) {
+    const { store } = parseImportJSON(exportStoreJSON({ ...sampleStore(), locale }));
+    assert.equal(store.locale, 'auto');
+  }
+});
