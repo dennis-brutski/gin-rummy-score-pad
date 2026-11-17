@@ -175,7 +175,10 @@ function saveStore(s) {
 //   Knock: knocker scores (opp deadwood - knocker deadwood) if positive
 //   Gin:   knocker scores opp deadwood + 25 gin bonus
 //   Undercut: defender scores (knocker deadwood - defender deadwood) + 10 undercut bonus
-//   Game end: 100+ wins. Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+//   Game end: the first player to reach the target wins. A tie at or over the
+//             target plays on until a hand breaks it.
+//             Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+
 // Who has won, given the running scores? Null while nobody has reached the
 // target, and also on a tie — the next hand decides it.
 function gameWinner(scores, target) {
