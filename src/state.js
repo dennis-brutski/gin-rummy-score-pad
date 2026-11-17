@@ -75,7 +75,7 @@ const rid = (p) => p + Math.random().toString(36).slice(2, 10);
 // ── factories ─────────────────────────────────────────────────────────────
 const newPlayer = (name) => ({
   id: rid('p_'),
-  name: String(name).trim(),
+  name: String(name).trim().slice(0, 24),
   createdAt: Date.now(),
 });
 
