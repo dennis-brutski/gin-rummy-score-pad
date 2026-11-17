@@ -175,7 +175,18 @@ function saveStore(s) {
 //   Knock: knocker scores (opp deadwood - knocker deadwood) if positive
 //   Gin:   knocker scores opp deadwood + 25 gin bonus
 //   Undercut: defender scores (knocker deadwood - defender deadwood) + 10 undercut bonus
-//   Game end: 100+ wins. Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+//   Game end: the first player to reach the target wins. A tie at or over the
+//             target plays on until a hand breaks it.
+//             Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+
+// Who has won, given the running scores? Null while nobody has reached the
+// target, and also on a tie — the next hand decides it.
+function gameWinner(scores, target) {
+  if (scores[0] < target && scores[1] < target) return null;
+  if (scores[0] === scores[1]) return null;
+  return scores[0] > scores[1] ? 0 : 1;
+}
+
 function applyHandToGame(game, { type, winner, points }) {
   const rules = rulesOf(game);
   const scores = [...game.scores];
@@ -188,14 +199,14 @@ function applyHandToGame(game, { type, winner, points }) {
   boxes[winner] += 1;
   const id = rid('h_');
   const handEntry = { id, deal: game.deal, type, winner, points, totalThisHand: added };
-  const finished = scores[0] >= rules.target || scores[1] >= rules.target;
+  const winnerIdx = gameWinner(scores, rules.target);
   return {
     ...game,
     scores, boxes,
     hands: [...game.hands, handEntry],
     deal: game.deal + 1,
-    phase: finished ? 'finished' : 'playing',
-    winner: finished ? (scores[0] > scores[1] ? 0 : 1) : null,
+    phase: winnerIdx != null ? 'finished' : 'playing',
+    winner: winnerIdx,
     updatedAt: Date.now(),
   };
 }
@@ -230,14 +241,14 @@ function recomputeGame(game) {
     else                { s1 += h.totalThisHand; b1 += 1; }
     if (h.deal > lastDeal) lastDeal = h.deal;
   }
-  const finished = s0 >= rules.target || s1 >= rules.target;
+  const winnerIdx = gameWinner([s0, s1], rules.target);
   return {
     ...game,
     scores: [s0, s1],
     boxes:  [b0, b1],
     deal:   lastDeal + 1,
-    phase:  finished ? 'finished' : 'playing',
-    winner: finished ? (s0 > s1 ? 0 : 1) : null,
+    phase:  winnerIdx != null ? 'finished' : 'playing',
+    winner: winnerIdx,
     updatedAt: Date.now(),
   };
 }

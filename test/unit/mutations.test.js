@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   newGame, applyHandToGame, undoLastHand, recomputeGame,
-  editHandInGame, deleteHandInGame, dealerOf, newPlayer,
+  editHandInGame, deleteHandInGame, dealerOf, newPlayer, applyRulesToGame,
 } from '../../src/state.js';
 
 const played = () => {
@@ -86,4 +86,44 @@ test('dealerOf alternates from dealerStart', () => {
 test('newPlayer caps the name at 24 characters', () => {
   assert.equal(newPlayer('  ' + 'x'.repeat(30) + '  ').name, 'x'.repeat(24));
   assert.equal(newPlayer('Mira').name, 'Mira');
+});
+
+const tiedAt60 = () => {
+  let g = newGame('a', 'b');
+  g = applyHandToGame(g, { type: 'knock', winner: 0, points: 60 });
+  g = applyHandToGame(g, { type: 'knock', winner: 1, points: 60 });
+  return g;
+};
+
+test('a tie at or over the target does not finish the game', () => {
+  const g = applyRulesToGame(tiedAt60(), { target: 50 });
+  assert.deepEqual(g.scores, [60, 60]);
+  assert.equal(g.phase, 'playing');
+  assert.equal(g.winner, null);
+});
+
+test('a scoreless hand on a tie over the target keeps the game going', () => {
+  let g = applyRulesToGame(tiedAt60(), { target: 50 });
+  g = applyHandToGame(g, { type: 'knock', winner: 1, points: 0 });
+  assert.deepEqual(g.scores, [60, 60]);
+  assert.equal(g.phase, 'playing');
+  assert.equal(g.winner, null);
+});
+
+test('the next scoring hand after a tie decides the game', () => {
+  let g = applyRulesToGame(tiedAt60(), { target: 50 });
+  g = applyHandToGame(g, { type: 'knock', winner: 0, points: 5 });
+  assert.equal(g.phase, 'finished');
+  assert.equal(g.winner, 0);
+});
+
+test('raising the gin bonus mid-game into a tie over the target keeps it going', () => {
+  let g = newGame('a', 'b');
+  g = applyHandToGame(g, { type: 'gin', winner: 0, points: 70 });
+  g = applyHandToGame(g, { type: 'gin', winner: 1, points: 70 });
+  assert.deepEqual(g.scores, [90, 90]);
+  g = applyRulesToGame(g, { ...g.rules, ginBonus: 30 });
+  assert.deepEqual(g.scores, [100, 100]);
+  assert.equal(g.phase, 'playing');
+  assert.equal(g.winner, null);
 });
