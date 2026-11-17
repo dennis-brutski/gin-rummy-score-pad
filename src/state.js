@@ -442,7 +442,9 @@ function parseImportJSON(text) {
     return { error: 'Backup is missing players or games.' };
   }
   // Strip unknown fields to defend against tampered payloads; rebuild a
-  // clean store shape from scratch.
+  // clean store shape from scratch. Each game's scores, boxes, phase and
+  // winner are then re-derived from its hands, since the imported ones may
+  // disagree; recomputeGame stamps updatedAt, so the backup's is restored.
   const clean = {
     ...initialStore(),
     theme: ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto',
@@ -472,7 +474,7 @@ function parseImportJSON(text) {
       phase: g.phase === 'finished' ? 'finished' : 'playing',
       winner: g.winner === 0 || g.winner === 1 ? g.winner : null,
       rules: cleanRules(g.rules, LEGACY_RULES),
-    })),
+    })).map((g) => ({ ...recomputeGame(g), updatedAt: g.updatedAt })),
     activeGameId: null,    // always land on home on import
     view: 'home',
   };
