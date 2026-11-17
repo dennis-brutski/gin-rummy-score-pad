@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   newGame, applyHandToGame, undoLastHand, recomputeGame,
-  editHandInGame, deleteHandInGame, dealerOf,
+  editHandInGame, deleteHandInGame, dealerOf, newPlayer,
 } from '../../src/state.js';
 
 const played = () => {
@@ -81,4 +81,9 @@ test('dealerOf alternates from dealerStart', () => {
   assert.equal(dealerOf(g), 0);
   assert.equal(dealerOf({ ...g, deal: 2 }), 1);
   assert.equal(dealerOf({ ...g, deal: 3 }), 0);
+});
+
+test('newPlayer caps the name at 24 characters', () => {
+  assert.equal(newPlayer('  ' + 'x'.repeat(30) + '  ').name, 'x'.repeat(24));
+  assert.equal(newPlayer('Mira').name, 'Mira');
 });
