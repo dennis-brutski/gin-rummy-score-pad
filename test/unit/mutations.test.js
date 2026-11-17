@@ -116,3 +116,14 @@ test('the next scoring hand after a tie decides the game', () => {
   assert.equal(g.phase, 'finished');
   assert.equal(g.winner, 0);
 });
+
+test('raising the gin bonus mid-game into a tie over the target keeps it going', () => {
+  let g = newGame('a', 'b');
+  g = applyHandToGame(g, { type: 'gin', winner: 0, points: 70 });
+  g = applyHandToGame(g, { type: 'gin', winner: 1, points: 70 });
+  assert.deepEqual(g.scores, [90, 90]);
+  g = applyRulesToGame(g, { ...g.rules, ginBonus: 30 });
+  assert.deepEqual(g.scores, [100, 100]);
+  assert.equal(g.phase, 'playing');
+  assert.equal(g.winner, null);
+});
