@@ -55,7 +55,7 @@ by wayfinder into issues. iOS follows after that.
 
 ## Where things live (decided by Dennis: own folder)
 
-**`~/git/gin-rummy-scorepad-factory/`** — its own git repo:
+**`~/git/issue-to-pr-factory/`** — its own git repo:
 
 - the factory script and its unit tests
 - stage prompts

@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Factory repo: `~/git/gin-rummy-scorepad-factory` (own git repo). App repo: `~/git/gin-rummy-score-pad`, GitHub `dennis-brutski/gin-rummy-score-pad`, base branch `master`.
+- Factory repo: `~/git/issue-to-pr-factory` (own git repo). App repo: `~/git/gin-rummy-score-pad`, GitHub `dennis-brutski/gin-rummy-score-pad`, base branch `master`.
 - No dependencies in the factory repo. No new dependencies in the app repo.
 - **Commits:** the executor does not run `git commit` in either repo unless Dennis has said so for this plan. Each task ends at a commit checkpoint: stop, report, suggest the message. Never add co-author, "Generated with", or session trailers anywhere.
 - Agents never run with `bypassPermissions` or `--dangerously-skip-permissions`.
@@ -126,7 +126,7 @@ export function promptInput(item, cfg, sinceIso = null)
 
 `.gitignore`: `repo/`, `worktrees/`, `logs/`, `factory.lock`. `package.json`: `"type": "module"`, scripts `start: node factory.mjs`, `test: node --test`, `smoke: node smoke/containment.mjs`.
 
-- [ ] **Step 1: `git init -b main ~/git/gin-rummy-scorepad-factory`, add `package.json`, `.gitignore`, `config.mjs`**
+- [ ] **Step 1: `git init -b main ~/git/issue-to-pr-factory`, add `package.json`, `.gitignore`, `config.mjs`**
 
 - [ ] **Step 2: Write the failing tests** in `test/eligibility.test.mjs`. Use a helper `item(overrides)` returning an owner-authored issue labelled `agent:implement` by the owner at `2026-11-01T10:00:00Z`.
 
@@ -379,7 +379,7 @@ export async function runAgent({ cwd, prompt, schema, readOnly, cfg, logFile, en
     "network": { "allowedDomains": [] },
     "filesystem": {
       "denyRead": ["~"],
-      "allowRead": ["~/git/gin-rummy-scorepad-factory", "~/.nvm"]
+      "allowRead": ["~/git/issue-to-pr-factory", "~/.nvm"]
     }
   }
 }
