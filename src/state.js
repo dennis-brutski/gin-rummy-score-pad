@@ -444,13 +444,13 @@ function exportStoreJSON(store) {
 function parseImportJSON(text) {
   let data;
   try { data = JSON.parse(text); }
-  catch (e) { return { error: "That doesn't look like a valid backup file." }; }
+  catch (e) { return { error: 'importInvalidJson' }; }
   if (!data || data.kind !== 'gin-rummy-counter.v2' || !data.store) {
-    return { error: "This file isn't a Gin Rummy Counter backup." };
+    return { error: 'importBadFormat' };
   }
   const s = data.store;
   if (!Array.isArray(s.players) || !Array.isArray(s.games)) {
-    return { error: 'Backup is missing players or games.' };
+    return { error: 'importMissing' };
   }
   // Strip unknown fields to defend against tampered payloads; rebuild a
   // clean store shape from scratch. Each game's scores, boxes, phase and

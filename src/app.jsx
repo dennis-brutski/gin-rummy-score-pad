@@ -198,13 +198,7 @@ function App() {
       const text = await file.text();
       const result = parseImportJSON(text);
       if (result.error) {
-        // Map state-layer error strings to localized toasts.
-        const map = {
-          "That doesn't look like a valid backup file.": 'importInvalidJson',
-          "This file isn't a Gin Rummy Counter backup.": 'importBadFormat',
-          'Backup is missing players or games.': 'importMissing',
-        };
-        showToast(t(map[result.error] || 'importReadError'));
+        showToast(t(result.error));
         return;
       }
       const ok = window.confirm(t('importConfirm',
