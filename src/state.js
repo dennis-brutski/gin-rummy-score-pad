@@ -1,4 +1,4 @@
-// state.jsx — v2 multi-game store, with player roster and stats
+// state.js — v2 multi-game store, with player roster and stats
 //
 // Shape:
 //   {
@@ -15,11 +15,10 @@
 //     view: 'home' | 'setup' | 'game' | 'stats',   // which screen is showing
 //   }
 //
-// Scoring rules: standard. See scoreHand() below.
+// Scoring rules: standard. See handTotal() below.
 
 const STORAGE_KEY  = 'gr-counter.v2';
 const LEGACY_KEY   = 'gr-counter.v1';
-const TARGET_SCORE = 100;
 const APP_VERSION  = '1.0.0';
 
 // Scoring rules — these are the user-configurable bonuses. Each game stores
@@ -131,8 +130,7 @@ function migrateFromV1(v1) {
     players: [p0, p1],
     games: game ? [game] : [],
     activeGameId: game ? game.id : null,
-    view: game && game.phase === 'playing' ? 'game' :
-          game && game.phase === 'finished' ? 'game' : 'home',
+    view: game ? 'game' : 'home',
   };
 }
 
@@ -171,13 +169,15 @@ function saveStore(s) {
 }
 
 // ── scoring ──────────────────────────────────────────────────────────────
-// Standard scoring:
-//   Knock: knocker scores (opp deadwood - knocker deadwood) if positive
-//   Gin:   knocker scores opp deadwood + 25 gin bonus
-//   Undercut: defender scores (knocker deadwood - defender deadwood) + 10 undercut bonus
-//   Game end: the first player to reach the target wins. A tie at or over the
+// Standard scoring, with every bonus taken from the game's `rules`:
+//   Knock:    knocker scores (opp deadwood - knocker deadwood) if positive
+//   Gin:      knocker scores opp deadwood + rules.ginBonus
+//             (rules.longGinBonus for long gin)
+//   Undercut: defender scores (knocker deadwood - defender deadwood) + rules.undercutBonus
+//   Game end: the first player to reach rules.target wins. A tie at or over the
 //             target plays on until a hand breaks it.
-//             Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+//             Winner adds rules.gameBonus + rules.boxBonus per box
+//             + rules.shutoutBonus if shutout.
 
 // Who has won, given the running scores? Null while nobody has reached the
 // target, and also on a tie — the next hand decides it.
@@ -187,14 +187,19 @@ function gameWinner(scores, target) {
   return scores[0] > scores[1] ? 0 : 1;
 }
 
+// A hand's total: its raw points plus the bonus for its type under `rules`.
+function handTotal(rules, type, points) {
+  if (type === 'gin')      return points + rules.ginBonus;
+  if (type === 'longGin')  return points + rules.longGinBonus;
+  if (type === 'undercut') return points + rules.undercutBonus;
+  return points;
+}
+
 function applyHandToGame(game, { type, winner, points }) {
   const rules = rulesOf(game);
   const scores = [...game.scores];
   const boxes  = [...game.boxes];
-  let added = points;
-  if (type === 'gin')      added += rules.ginBonus;
-  if (type === 'longGin')  added += rules.longGinBonus;
-  if (type === 'undercut') added += rules.undercutBonus;
+  const added = handTotal(rules, type, points);
   scores[winner] += added;
   boxes[winner] += 1;
   const id = rid('h_');
@@ -213,21 +218,7 @@ function applyHandToGame(game, { type, winner, points }) {
 
 function undoLastHand(game) {
   if (!game || game.hands.length === 0) return game;
-  const last = game.hands[game.hands.length - 1];
-  const scores = [...game.scores];
-  const boxes  = [...game.boxes];
-  scores[last.winner] -= last.totalThisHand;
-  boxes[last.winner]  -= 1;
-  // If we just unwound the winning hand, return to 'playing'.
-  return {
-    ...game,
-    scores, boxes,
-    hands: game.hands.slice(0, -1),
-    deal: Math.max(1, game.deal - 1),
-    phase: 'playing',
-    winner: null,
-    updatedAt: Date.now(),
-  };
+  return recomputeGame({ ...game, hands: game.hands.slice(0, -1) });
 }
 
 // Recompute a game's running totals from its hands array. Used after a
@@ -264,11 +255,7 @@ function editHandInGame(game, handId, patch) {
     const type   = patch.type   ?? h.type;
     const winner = patch.winner ?? h.winner;
     const points = patch.points ?? h.points;
-    let total = points;
-    if (type === 'gin')      total += rules.ginBonus;
-    if (type === 'longGin')  total += rules.longGinBonus;
-    if (type === 'undercut') total += rules.undercutBonus;
-    return { ...h, type, winner, points, totalThisHand: total, edited: true };
+    return { ...h, type, winner, points, totalThisHand: handTotal(rules, type, points), edited: true };
   });
   return recomputeGame({ ...game, hands });
 }
@@ -291,13 +278,7 @@ function deleteHandInGame(game, handId) {
 function applyRulesToGame(game, newRules) {
   if (!game) return game;
   const rules = { ...DEFAULT_RULES, ...newRules };
-  const hands = game.hands.map((h) => {
-    let total = h.points;
-    if (h.type === 'gin')      total += rules.ginBonus;
-    if (h.type === 'longGin')  total += rules.longGinBonus;
-    if (h.type === 'undercut') total += rules.undercutBonus;
-    return { ...h, totalThisHand: total };
-  });
+  const hands = game.hands.map((h) => ({ ...h, totalThisHand: handTotal(rules, h.type, h.points) }));
   return recomputeGame({ ...game, hands, rules });
 }
 
@@ -393,13 +374,12 @@ function computeStats(store) {
 // pB's id. UI does the lookup by sorting two ids.
 function computeHeadToHead(store) {
   const out = {};
-  const pid = (p) => p?.id;
   for (const g of store.games) {
     if (g.phase !== 'finished') continue;
     const a = findPlayer(store, g.p0Id);
     const b = findPlayer(store, g.p1Id);
     if (!a || !b) continue;
-    const [lo, hi] = pid(a) < pid(b) ? [a, b] : [b, a];
+    const [lo, hi] = a.id < b.id ? [a, b] : [b, a];
     const key = `${lo.id}|${hi.id}`;
     if (!out[key]) {
       out[key] = { players: [lo, hi], wins: [0, 0], total: 0, lastPlayed: 0 };
@@ -499,7 +479,7 @@ function activeGame(store)       { return findGame(store, store.activeGameId); }
 function gamePlayers(store, g)   { return [findPlayer(store, g.p0Id), findPlayer(store, g.p1Id)]; }
 
 export {
-  TARGET_SCORE, DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
+  DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
