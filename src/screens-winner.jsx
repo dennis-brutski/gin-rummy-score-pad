@@ -6,7 +6,7 @@ import { Crest, haptic } from './ui.jsx';
 import { gamePlayers } from './state.js';
 import { Ledger } from './screens-game.jsx';
 
-const { useEffect: useEW } = React;
+const { useEffect } = React;
 
 function WinnerScreen({ store, game, summary, onPlayAgain, onHome }) {
   const { t } = useT();
@@ -16,7 +16,7 @@ function WinnerScreen({ store, game, summary, onPlayAgain, onHome }) {
   const [p0, p1] = gamePlayers(store, game);
   const names = [p0?.name || '—', p1?.name || '—'];
 
-  useEW(() => {
+  useEffect(() => {
     haptic(40);
     const t1 = setTimeout(() => haptic(30), 220);
     const t2 = setTimeout(() => haptic(20), 400);

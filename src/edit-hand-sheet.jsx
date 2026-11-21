@@ -7,7 +7,7 @@ import { DEFAULT_RULES } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { Key } from './score-sheet.jsx';
 
-const { useState: useSS } = React;
+const { useState } = React;
 
 // ────────────────────────────────────────────────────────────────
 // EditHandSheet — single-screen editor for an existing ledger row.
@@ -22,10 +22,10 @@ const { useState: useSS } = React;
 function EditHandSheet({ initial, players, rules, onClose, onSave, onDelete }) {
   const { t } = useT();
   const r = { ...DEFAULT_RULES, ...(rules || {}) };
-  const [type, setType]     = useSS(initial.type);
-  const [winner, setWinner] = useSS(initial.winner);
-  const [points, setPoints] = useSS(initial.points);
-  const [confirmDel, setConfirmDel] = useSS(false);
+  const [type, setType]     = useState(initial.type);
+  const [winner, setWinner] = useState(initial.winner);
+  const [points, setPoints] = useState(initial.points);
+  const [confirmDel, setConfirmDel] = useState(false);
 
   const bonus = type === 'gin' ? r.ginBonus
               : type === 'longGin' ? r.longGinBonus

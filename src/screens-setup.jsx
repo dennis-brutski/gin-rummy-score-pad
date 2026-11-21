@@ -5,16 +5,16 @@ import { useT } from './i18n.js';
 import { BrassRule, haptic } from './ui.jsx';
 import { findPlayer, DEFAULT_RULES } from './state.js';
 
-const { useState: useSU } = React;
+const { useState } = React;
 
 function SetupScreen({ store, onStart, onDeletePlayer, onRenamePlayer, onBack }) {
   const { t } = useT();
   // Each slot is either { id } (picked from roster) or { name } (typed fresh).
-  const [a, setA] = useSU(null);
-  const [b, setB] = useSU(null);
-  const [typingA, setTypingA] = useSU('');
-  const [typingB, setTypingB] = useSU('');
-  const [manageMode, setManageMode] = useSU(false);
+  const [a, setA] = useState(null);
+  const [b, setB] = useState(null);
+  const [typingA, setTypingA] = useState('');
+  const [typingB, setTypingB] = useState('');
+  const [manageMode, setManageMode] = useState(false);
 
   const players = store.players || [];
   const pickedIds = new Set([a?.id, b?.id].filter(Boolean));
@@ -37,7 +37,7 @@ function SetupScreen({ store, onStart, onDeletePlayer, onRenamePlayer, onBack })
 
   // When a roster chip is tapped, fill the first empty slot — and if both
   // slots are filled, replace whichever was set most recently.
-  const [lastSlot, setLastSlot] = useSU('a');
+  const [lastSlot, setLastSlot] = useState('a');
   const pickFromRoster = (p) => {
     haptic(6);
     if (!a) { setA({ id: p.id }); setTypingA(''); setLastSlot('a'); return; }
@@ -252,8 +252,8 @@ function RosterChip({ player, disabled, onPick }) {
 // ─────────────────────────────────────────────────────────────────────────
 function RosterChipEdit({ player, onRename, onDelete, store }) {
   const { t } = useT();
-  const [text, setText] = useSU(player.name);
-  const [confirming, setConfirming] = useSU(false);
+  const [text, setText] = useState(player.name);
+  const [confirming, setConfirming] = useState(false);
   const inUse = store.games.some((g) => g.p0Id === player.id || g.p1Id === player.id);
   const dirty = text.trim() !== player.name && text.trim().length > 0;
   const commit = () => {
