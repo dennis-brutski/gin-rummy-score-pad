@@ -213,21 +213,7 @@ function applyHandToGame(game, { type, winner, points }) {
 
 function undoLastHand(game) {
   if (!game || game.hands.length === 0) return game;
-  const last = game.hands[game.hands.length - 1];
-  const scores = [...game.scores];
-  const boxes  = [...game.boxes];
-  scores[last.winner] -= last.totalThisHand;
-  boxes[last.winner]  -= 1;
-  // If we just unwound the winning hand, return to 'playing'.
-  return {
-    ...game,
-    scores, boxes,
-    hands: game.hands.slice(0, -1),
-    deal: Math.max(1, game.deal - 1),
-    phase: 'playing',
-    winner: null,
-    updatedAt: Date.now(),
-  };
+  return recomputeGame({ ...game, hands: game.hands.slice(0, -1) });
 }
 
 // Recompute a game's running totals from its hands array. Used after a
