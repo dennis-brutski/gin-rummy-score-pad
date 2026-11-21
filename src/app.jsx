@@ -63,9 +63,11 @@ function App() {
 
   // ── transient (non-persistent) UI state ────────────────────────────────
   const [toast, setToast] = useSA(null);
+  const toastTimer = React.useRef(null);
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(null), 2800);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2800);
   };
 
   // ── app updates ────────────────────────────────────────────────────────
