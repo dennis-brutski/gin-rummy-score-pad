@@ -26,17 +26,16 @@ npm run e2e     # builds, then Playwright end-to-end tests
 | `test/unit/` | One file per area of `state.js` / `i18n.js`. |
 | `test/behavior/` | Multi-step game flows through `state.js`. |
 | `e2e/` | Playwright specs against the built app; shared steps in `e2e/helpers.js`. |
-| `handoff/` | The original prototype. Frozen reference — never edit it. (inferred — Dennis to confirm) |
 
 ## Rules
 
 1. **Test first.** Write a failing test, see it fail, then write the code. Logic gets a unit test in `test/unit/`; anything the user sees or taps gets or extends an e2e spec.
-2. **Logic stays out of components.** Scoring, rules and data changes go in `src/state.js` as pure functions that return new objects; components call them. (inferred — Dennis to confirm)
+2. **Logic stays out of components.** Scoring, rules and data changes go in `src/state.js` as pure functions that return new objects; components call them.
 3. **Every string goes through `src/i18n.js`, in all 9 languages** (en, de, ru, es, fr, pt, it, zh, ja). No hard-coded UI text in components. Plurals are functions, as the existing entries show.
 4. **No new dependencies.** React and esbuild only; Playwright for tests. Prefer the platform (CSS, native inputs, Web APIs).
-5. **Stored data must keep loading.** Games live in `localStorage`; a change to the stored shape needs a migration and a test in `test/unit/persistence.test.js` or `backup.test.js`. (inferred — Dennis to confirm)
+5. **Stored data must keep loading.** Games live in `localStorage`; a change to the stored shape needs a migration and a test in `test/unit/persistence.test.js` or `backup.test.js`.
 6. **Every game keeps its own copy of the rules.** Changing rules must never alter finished games.
-7. **Offline first.** No network requests at runtime. A new static file must be added to the `CORE` list in `public/sw.js`, or it will not work offline. (inferred — Dennis to confirm)
+7. **Offline first.** No network requests at runtime. A new static file must be added to the `CORE` list in `public/sw.js`, or it will not work offline.
 8. **Do not edit existing tests to make them pass.** If a test is wrong, say so and stop. Do not touch `.github/`, `playwright.config.js` or `package.json` as part of a feature.
 9. **Small, readable changes.** Match the style of the file you are in. No drive-by refactors.
 

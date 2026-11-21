@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn the HTML/React prototype in `handoff/` into an installable, offline-capable, fully tested PWA.
+**Goal:** Turn the HTML/React prototype into an installable, offline-capable, fully tested PWA.
 
 **Architecture:** The prototype's files are ported nearly verbatim into `src/` as ES modules (the `Object.assign(window, …)` globals become imports/exports), bundled by esbuild into a static `dist/`. The pure state layer gets `node:test` unit + behavior suites; Playwright drives a small mobile-viewport e2e suite. Three known bugs are fixed with regression tests.
 
 **Tech Stack:** React 19, esbuild, `node:test` (Node ≥ 20; dev machine has v25), `@playwright/test` (Chromium only).
 
-**Spec:** `docs/superpowers/specs/2026-07-21-gin-rummy-pwa-design.md`. The prototype source of truth is `handoff/` — keep it untouched as reference.
+**Spec:** `docs/superpowers/specs/2026-07-21-gin-rummy-pwa-design.md`. The prototype is the source of truth for the port.
 
 ## Global Constraints
 
@@ -22,7 +22,7 @@
 
 ## Port recipe (referenced by Tasks 2, 9, 10)
 
-For each `handoff/X.jsx` → `src/X.jsx` (or `.js` when it contains no JSX):
+For each prototype file `X.jsx` → `src/X.jsx` (or `.js` when it contains no JSX):
 1. `cp` the file.
 2. Delete the `Object.assign(window, { … })` statement at the bottom; add `export { <the same names> };` in its place.
 3. Add `import React from 'react';` if the file references `React`. Keep existing destructures like `const { useState: useSS } = React;` — they now read from the import.
@@ -88,7 +88,7 @@ git commit -m "Scaffold npm project with react, esbuild, playwright"
 ### Task 2: Port state.js + scoring unit tests
 
 **Files:**
-- Create: `src/state.js` (from `handoff/state.jsx` via the Port recipe — it contains no JSX)
+- Create: `src/state.js` (from the prototype's `state.jsx` via the Port recipe — it contains no JSX)
 - Test: `test/unit/scoring.test.js`
 
 **Interfaces:**
@@ -168,7 +168,7 @@ Expected: FAIL — cannot find module `src/state.js`.
 
 ```bash
 mkdir -p src
-cp handoff/state.jsx src/state.js
+cp <prototype>/state.jsx src/state.js
 ```
 
 Then in `src/state.js` replace the entire `Object.assign(window, { … });` block (lines ~462–471) with:
@@ -301,7 +301,7 @@ test('dealerOf alternates from dealerStart', () => {
 
 - [ ] **Step 2: Run and verify all pass**
 
-Run: `node --test test/unit/mutations.test.js` — Expected: all PASS. If any fails, the port diverged from `handoff/state.jsx` — diff against the original; do NOT change assertions to match broken code.
+Run: `node --test test/unit/mutations.test.js` — Expected: all PASS. If any fails, the port diverged from the prototype's `state.jsx` — diff against the original; do NOT change assertions to match broken code.
 
 - [ ] **Step 3: Commit**
 
@@ -766,7 +766,7 @@ git commit -m "Add behavior-flow tests over the state layer"
 ### Task 9: Port i18n + tests
 
 **Files:**
-- Create: `src/i18n.js` (from `handoff/i18n.jsx` via the Port recipe — no JSX inside)
+- Create: `src/i18n.js` (from the prototype's `i18n.jsx` via the Port recipe — no JSX inside)
 - Test: `test/unit/i18n.test.js`
 
 **Interfaces:**
@@ -822,7 +822,7 @@ Run: `node --test test/unit/i18n.test.js` — Expected: FAIL, module not found.
 - [ ] **Step 3: Port the module**
 
 ```bash
-cp handoff/i18n.jsx src/i18n.js
+cp <prototype>/i18n.jsx src/i18n.js
 ```
 
 In `src/i18n.js`: add `import React from 'react';` as the first line; replace the trailing `Object.assign(window, { … });` with:
@@ -869,7 +869,7 @@ git commit -m "Port i18n module with dictionary and locale tests"
 | `screens-stats.jsx` | `react`; `./i18n.js`; `./ui.jsx`; `./state.js` (`computeStats`, `computeHeadToHead`, `findPlayer` as used) |
 | `app.jsx` | `react`; `./i18n.js` (`resolveLocale`, `makeT`, `LocaleContext`); `./state.js` (all helpers it calls); the five screen modules |
 
-Copy `handoff/styles.css` → `src/styles.css` unchanged (the Google Fonts `@import` is replaced in Task 14).
+Copy the prototype's `styles.css` → `src/styles.css` unchanged (the Google Fonts `@import` is replaced in Task 14).
 
 - [ ] **Step 2: Write `src/main.jsx`** (the prototype's desktop letterbox `Shell` from the HTML file is intentionally dropped — phones are the target; the app renders full-viewport)
 

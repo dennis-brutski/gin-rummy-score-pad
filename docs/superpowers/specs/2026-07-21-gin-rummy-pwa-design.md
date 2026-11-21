@@ -5,7 +5,7 @@
 
 ## Summary
 
-Productionize the HTML/React prototype in `handoff/` into an installable, offline-capable PWA that runs on Android and iOS phones. No rewrite: the prototype's code, look, and data model are the product. Add a real build step, a real service worker, bundled assets, and a test suite. Store distribution (Play Store / App Store) is deferred; the chosen path keeps it open via Capacitor or a Trusted Web Activity later with no code changes.
+Productionize the HTML/React prototype into an installable, offline-capable PWA that runs on Android and iOS phones. No rewrite: the prototype's code, look, and data model are the product. Add a real build step, a real service worker, bundled assets, and a test suite. Store distribution (Play Store / App Store) is deferred; the chosen path keeps it open via Capacitor or a Trusted Web Activity later with no code changes.
 
 ## Goals
 
@@ -16,7 +16,7 @@ Productionize the HTML/React prototype in `handoff/` into an installable, offlin
 
 ## Non-goals (v1)
 
-- App-store packaging, icons/splash/signing, store listings (deferred; see `handoff/NATIVE_PACKAGING.md`).
+- App-store packaging, icons/splash/signing, store listings (deferred).
 - TypeScript conversion.
 - CI setup.
 - Restructuring i18n — dictionaries are ported as-is.
@@ -25,7 +25,7 @@ Productionize the HTML/React prototype in `handoff/` into an installable, offlin
 ## Architecture
 
 ```
-src/          state.js, i18n.js, ui.jsx, app.jsx, screens-*.jsx, styles.css  (ported from handoff/)
+src/          state.js, i18n.js, ui.jsx, app.jsx, screens-*.jsx, styles.css  (ported from the prototype)
 public/       index.html, manifest.json, sw.js, fonts/*.woff2, icons
 test/
   unit/       one file per state-function group (node:test)
@@ -70,5 +70,5 @@ build.mjs     esbuild script → dist/ (static, deployable anywhere)
 
 ## Later (explicitly deferred)
 
-- Play Store via Capacitor or Bubblewrap/TWA; App Store via Capacitor (`handoff/NATIVE_PACKAGING.md` is the checklist). Nothing in this design blocks it.
+- Play Store via Capacitor or Bubblewrap/TWA; App Store via Capacitor. Nothing in this design blocks it.
 - Native haptics, status-bar styling, crash reporting — Capacitor-era concerns.
