@@ -4,7 +4,9 @@ import React from 'react';
 import { useT, romanize } from './i18n.js';
 import { Crest, haptic, Suit, Pip } from './ui.jsx';
 import { TARGET_SCORE, dealerOf, gamePlayers } from './state.js';
-import { ScoreSheet, MenuSheet, EditHandSheet } from './screens-sheet.jsx';
+import { ScoreSheet } from './score-sheet.jsx';
+import { MenuSheet } from './menu-sheet.jsx';
+import { EditHandSheet } from './edit-hand-sheet.jsx';
 
 const { useState: useStateG, useEffect: useEffectG, useRef: useRefG } = React;
 

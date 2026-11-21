@@ -6,7 +6,9 @@ import React from 'react';
 import { useT } from './i18n.js';
 import { BrassRule, Suit, haptic } from './ui.jsx';
 import { APP_VERSION, DEFAULT_RULES, gamePlayers } from './state.js';
-import { Sheet, ThemePicker, LanguagePicker, RulesEditor, MenuDivider, MenuRow } from './screens-sheet.jsx';
+import { Sheet } from './sheet.jsx';
+import { ThemePicker } from './theme-picker.jsx';
+import { LanguagePicker, RulesEditor, MenuDivider, MenuRow } from './menu-sheet.jsx';
 
 const { useState: useSH } = React;
 
