@@ -109,6 +109,7 @@ function Hint({ children }) {
 
 // ── Cards in step 1
 function WinnerCard({ name, suit, color, badge, onPick }) {
+  const { t } = useT();
   return (
     <button className="press parchment" onClick={onPick} style={{
       display: 'flex', alignItems: 'center', gap: 16,
@@ -127,7 +128,7 @@ function WinnerCard({ name, suit, color, badge, onPick }) {
         <div style={{ fontSize: 28, lineHeight: 1, color, marginTop: 4 }}>{suit}</div>
       </div>
       <div style={{ flex: 1 }}>
-        <div className="eyebrow" style={{ color: 'var(--ink-faint)', fontSize: 9.5 }}>Winner</div>
+        <div className="eyebrow" style={{ color: 'var(--ink-faint)', fontSize: 9.5 }}>{t('winner')}</div>
         <div className="display" style={{
           fontSize: 26, color: 'var(--ink)', marginTop: 2,
           letterSpacing: '0.005em',

@@ -251,6 +251,7 @@ function RosterChip({ player, disabled, onPick }) {
 // Edits commit live (on blur/Enter) so there's no "forgot to save" trap.
 // ─────────────────────────────────────────────────────────────────────────
 function RosterChipEdit({ player, onRename, onDelete, store }) {
+  const { t } = useT();
   const [text, setText] = useSU(player.name);
   const [confirming, setConfirming] = useSU(false);
   const inUse = store.games.some((g) => g.p0Id === player.id || g.p1Id === player.id);
@@ -293,7 +294,7 @@ function RosterChipEdit({ player, onRename, onDelete, store }) {
             if (confirming) onDelete();
             else { setConfirming(true); setTimeout(() => setConfirming(false), 2200); }
           }}
-          title={confirming ? 'Tap again to remove' : 'Remove from roster'}
+          title={confirming ? t('tapAgainToRemove') : t('removeFromRoster')}
           style={{
             appearance: 'none', border: 'none', cursor: 'pointer',
             background: confirming ? 'var(--claret)' : 'rgba(0,0,0,0.2)',
