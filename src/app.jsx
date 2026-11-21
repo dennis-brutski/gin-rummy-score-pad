@@ -18,7 +18,7 @@ import { GameScreen } from './screens-game.jsx';
 import { WinnerScreen } from './screens-winner.jsx';
 import { StatsScreen } from './screens-stats.jsx';
 
-const { useState: useSA, useEffect: useEA } = React;
+const { useState: useSA, useEffect } = React;
 
 const toastStyle = {
   position: 'absolute', left: '50%', bottom: 26,
@@ -38,7 +38,7 @@ const toastButtonStyle = {
 
 function App() {
   const [store, setStore] = useSA(() => loadStore());
-  useEA(() => { saveStore(store); }, [store]);
+  useEffect(() => { saveStore(store); }, [store]);
 
   // ── locale (auto / en / de / ru / …) ─────────────────────────────────
   const localeSetting = store.locale || 'auto';
@@ -50,7 +50,7 @@ function App() {
   const [systemDark, setSystemDark] = useSA(() =>
     typeof matchMedia !== 'undefined'
       ? matchMedia('(prefers-color-scheme: dark)').matches : true);
-  useEA(() => {
+  useEffect(() => {
     if (typeof matchMedia === 'undefined') return;
     const mq = matchMedia('(prefers-color-scheme: dark)');
     const onChange = (e) => setSystemDark(e.matches);
@@ -72,7 +72,7 @@ function App() {
   // A new deploy installs a service worker that waits (see sw.js). While an
   // older one still controls the page, offer a reload.
   const [waitingWorker, setWaitingWorker] = useSA(null);
-  useEA(() => {
+  useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
     const sws = navigator.serviceWorker;
     let reg;
@@ -223,7 +223,7 @@ function App() {
   const summary = game ? summaryForGame(game) : null;
 
   // Active game is gone (deleted, or a stale id in storage): go Home.
-  useEA(() => {
+  useEffect(() => {
     if (store.view === 'game' && !game) exitToHome();
   }, [store.view, game]);
 
