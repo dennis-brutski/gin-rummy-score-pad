@@ -192,7 +192,7 @@ function SettingsSheet({ onClose, onExport, onImport, onWipeAll, rules, onSetRul
 // ────────────────────────────────────────────────────────────────
 // AboutBlock — version + tagline + privacy summary. Static; included in
 // Settings so app-store privacy/about requirements have a surface to point
-// at. APP_VERSION is wired to a single constant in state.jsx.
+// at. APP_VERSION is wired to a single constant in state.js.
 // ────────────────────────────────────────────────────────────────
 function AboutBlock({ rules }) {
   const { t } = useT();

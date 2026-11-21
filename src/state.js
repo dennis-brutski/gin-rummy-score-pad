@@ -1,4 +1,4 @@
-// state.jsx — v2 multi-game store, with player roster and stats
+// state.js — v2 multi-game store, with player roster and stats
 //
 // Shape:
 //   {
@@ -15,7 +15,7 @@
 //     view: 'home' | 'setup' | 'game' | 'stats',   // which screen is showing
 //   }
 //
-// Scoring rules: standard. See scoreHand() below.
+// Scoring rules: standard. See handTotal() below.
 
 const STORAGE_KEY  = 'gr-counter.v2';
 const LEGACY_KEY   = 'gr-counter.v1';
@@ -169,13 +169,15 @@ function saveStore(s) {
 }
 
 // ── scoring ──────────────────────────────────────────────────────────────
-// Standard scoring:
-//   Knock: knocker scores (opp deadwood - knocker deadwood) if positive
-//   Gin:   knocker scores opp deadwood + 25 gin bonus
-//   Undercut: defender scores (knocker deadwood - defender deadwood) + 10 undercut bonus
-//   Game end: the first player to reach the target wins. A tie at or over the
+// Standard scoring, with every bonus taken from the game's `rules`:
+//   Knock:    knocker scores (opp deadwood - knocker deadwood) if positive
+//   Gin:      knocker scores opp deadwood + rules.ginBonus
+//             (rules.longGinBonus for long gin)
+//   Undercut: defender scores (knocker deadwood - defender deadwood) + rules.undercutBonus
+//   Game end: the first player to reach rules.target wins. A tie at or over the
 //             target plays on until a hand breaks it.
-//             Winner adds 100 game bonus + 25 per box + 100 line bonus if shutout.
+//             Winner adds rules.gameBonus + rules.boxBonus per box
+//             + rules.shutoutBonus if shutout.
 
 // Who has won, given the running scores? Null while nobody has reached the
 // target, and also on a tie — the next hand decides it.

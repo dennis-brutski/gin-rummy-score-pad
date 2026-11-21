@@ -1,5 +1,5 @@
 // app.jsx — root: routes views, owns the persistent store, dispatches
-// mutations through pure helpers in state.jsx. Persists on every change.
+// mutations through pure helpers in state.js. Persists on every change.
 
 import React from 'react';
 import { resolveLocale, makeT, LocaleContext } from './i18n.js';
