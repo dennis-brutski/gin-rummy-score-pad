@@ -187,14 +187,19 @@ function gameWinner(scores, target) {
   return scores[0] > scores[1] ? 0 : 1;
 }
 
+// A hand's total: its raw points plus the bonus for its type under `rules`.
+function handTotal(rules, type, points) {
+  if (type === 'gin')      return points + rules.ginBonus;
+  if (type === 'longGin')  return points + rules.longGinBonus;
+  if (type === 'undercut') return points + rules.undercutBonus;
+  return points;
+}
+
 function applyHandToGame(game, { type, winner, points }) {
   const rules = rulesOf(game);
   const scores = [...game.scores];
   const boxes  = [...game.boxes];
-  let added = points;
-  if (type === 'gin')      added += rules.ginBonus;
-  if (type === 'longGin')  added += rules.longGinBonus;
-  if (type === 'undercut') added += rules.undercutBonus;
+  const added = handTotal(rules, type, points);
   scores[winner] += added;
   boxes[winner] += 1;
   const id = rid('h_');
@@ -250,11 +255,7 @@ function editHandInGame(game, handId, patch) {
     const type   = patch.type   ?? h.type;
     const winner = patch.winner ?? h.winner;
     const points = patch.points ?? h.points;
-    let total = points;
-    if (type === 'gin')      total += rules.ginBonus;
-    if (type === 'longGin')  total += rules.longGinBonus;
-    if (type === 'undercut') total += rules.undercutBonus;
-    return { ...h, type, winner, points, totalThisHand: total, edited: true };
+    return { ...h, type, winner, points, totalThisHand: handTotal(rules, type, points), edited: true };
   });
   return recomputeGame({ ...game, hands });
 }
@@ -277,13 +278,7 @@ function deleteHandInGame(game, handId) {
 function applyRulesToGame(game, newRules) {
   if (!game) return game;
   const rules = { ...DEFAULT_RULES, ...newRules };
-  const hands = game.hands.map((h) => {
-    let total = h.points;
-    if (h.type === 'gin')      total += rules.ginBonus;
-    if (h.type === 'longGin')  total += rules.longGinBonus;
-    if (h.type === 'undercut') total += rules.undercutBonus;
-    return { ...h, totalThisHand: total };
-  });
+  const hands = game.hands.map((h) => ({ ...h, totalThisHand: handTotal(rules, h.type, h.points) }));
   return recomputeGame({ ...game, hands, rules });
 }
 
