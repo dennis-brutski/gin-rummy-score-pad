@@ -10,13 +10,13 @@ import { Sheet } from './sheet.jsx';
 import { ThemePicker } from './theme-picker.jsx';
 import { LanguagePicker, RulesEditor, MenuDivider, MenuRow } from './menu-sheet.jsx';
 
-const { useState: useSH } = React;
+const { useState } = React;
 
 function HomeScreen({ store, onNewGame, onResume, onDeleteGame, onStats,
                      onExport, onImport, onWipeAll, rules, onSetRules,
                      theme, resolvedTheme, onSetTheme }) {
   const { t } = useT();
-  const [settingsOpen, setSettingsOpen] = useSH(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const games = [...store.games].sort((a, b) => b.updatedAt - a.updatedAt);
   const playing  = games.filter((g) => g.phase === 'playing');
   const finished = games.filter((g) => g.phase === 'finished');
@@ -116,7 +116,7 @@ function HomeScreen({ store, onNewGame, onResume, onDeleteGame, onStats,
 function SettingsSheet({ onClose, onExport, onImport, onWipeAll, rules, onSetRules,
                         theme, resolvedTheme, onSetTheme }) {
   const { t } = useT();
-  const [confirmWipe, setConfirmWipe] = useSH(false);
+  const [confirmWipe, setConfirmWipe] = useState(false);
   return (
     <Sheet title={t('settings')} onClose={onClose} closeLabel={t('done')}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingBottom: 14 }}>
@@ -285,7 +285,7 @@ function EmptyState() {
 // ─────────────────────────────────────────────────────────────────────────
 function GameRow({ game, store, onResume, onDelete }) {
   const { t } = useT();
-  const [confirm, setConfirm] = useSH(false);
+  const [confirm, setConfirm] = useState(false);
   const [p0, p1] = gamePlayers(store, game);
   const isFinished = game.phase === 'finished';
   const winner = game.winner;

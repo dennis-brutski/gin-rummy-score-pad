@@ -18,7 +18,7 @@ import { GameScreen } from './screens-game.jsx';
 import { WinnerScreen } from './screens-winner.jsx';
 import { StatsScreen } from './screens-stats.jsx';
 
-const { useState: useSA, useEffect } = React;
+const { useState, useEffect } = React;
 
 const toastStyle = {
   position: 'absolute', left: '50%', bottom: 26,
@@ -37,7 +37,7 @@ const toastButtonStyle = {
 };
 
 function App() {
-  const [store, setStore] = useSA(() => loadStore());
+  const [store, setStore] = useState(() => loadStore());
   useEffect(() => { saveStore(store); }, [store]);
 
   // ── locale (auto / en / de / ru / …) ─────────────────────────────────
@@ -47,7 +47,7 @@ function App() {
   const setLocale = (l) => setStore((s) => ({ ...s, locale: l }));
 
   // ── theme (auto / light / dark) ────────────────────────────────────────
-  const [systemDark, setSystemDark] = useSA(() =>
+  const [systemDark, setSystemDark] = useState(() =>
     typeof matchMedia !== 'undefined'
       ? matchMedia('(prefers-color-scheme: dark)').matches : true);
   useEffect(() => {
@@ -62,7 +62,7 @@ function App() {
   const setTheme = (t) => setStore((s) => ({ ...s, theme: t }));
 
   // ── transient (non-persistent) UI state ────────────────────────────────
-  const [toast, setToast] = useSA(null);
+  const [toast, setToast] = useState(null);
   const toastTimer = React.useRef(null);
   const showToast = (msg) => {
     setToast(msg);
@@ -73,7 +73,7 @@ function App() {
   // ── app updates ────────────────────────────────────────────────────────
   // A new deploy installs a service worker that waits (see sw.js). While an
   // older one still controls the page, offer a reload.
-  const [waitingWorker, setWaitingWorker] = useSA(null);
+  const [waitingWorker, setWaitingWorker] = useState(null);
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
     const sws = navigator.serviceWorker;

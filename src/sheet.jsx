@@ -4,7 +4,7 @@ import React from 'react';
 import { useT } from './i18n.js';
 import { BrassRule } from './ui.jsx';
 
-const { useEffect: useESS } = React;
+const { useEffect } = React;
 
 // ────────────────────────────────────────────────────────────────
 // Bottom-sheet shell
@@ -12,7 +12,7 @@ const { useEffect: useESS } = React;
 function Sheet({ children, onClose, title, step, totalSteps, closeLabel }) {
   const { t } = useT();
   // Prevent background scroll while sheet is open
-  useESS(() => {
+  useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };

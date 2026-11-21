@@ -8,7 +8,7 @@ import { ScoreSheet } from './score-sheet.jsx';
 import { MenuSheet } from './menu-sheet.jsx';
 import { EditHandSheet } from './edit-hand-sheet.jsx';
 
-const { useState: useStateG, useEffect: useEffectG, useRef: useRefG } = React;
+const { useState, useEffect, useRef } = React;
 
 // ────────────────────────────────────────────────────────────────
 // Game screen
@@ -17,9 +17,9 @@ function GameScreen({ store, game, onScore, onUndo, onExit, onStats,
                      onEditHand, onDeleteHand, onExport, onImport, onSetRules,
                      theme, resolvedTheme, onSetTheme }) {
   const { t } = useT();
-  const [sheetOpen, setSheetOpen] = useStateG(false);
-  const [menuOpen, setMenuOpen] = useStateG(false);
-  const [editingHand, setEditingHand] = useStateG(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [editingHand, setEditingHand] = useState(null);
 
   const [p0, p1] = gamePlayers(store, game);
   const names = [p0?.name || '—', p1?.name || '—'];
@@ -222,8 +222,8 @@ function ScoreColumn({ name, score, target, boxes, isLeader, isDealer, align, su
 // ────────────────────────────────────────────────────────────────
 function Ledger({ game, names, onPickHand }) {
   const { t } = useT();
-  const scrollRef = useRefG(null);
-  useEffectG(() => {
+  const scrollRef = useRef(null);
+  useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [game.hands.length]);
 

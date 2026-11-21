@@ -7,7 +7,7 @@ import { DEFAULT_RULES } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { KnockHint } from './knock-hint.jsx';
 
-const { useState: useSS } = React;
+const { useState } = React;
 
 // ────────────────────────────────────────────────────────────────
 // ScoreSheet — guided 3-step flow:
@@ -18,10 +18,10 @@ const { useState: useSS } = React;
 function ScoreSheet({ players, deal, rules, onClose, onConfirm }) {
   const { t } = useT();
   const r = { ...DEFAULT_RULES, ...(rules || {}) };
-  const [step, setStep] = useSS(1);
-  const [winner, setWinner] = useSS(null);
-  const [type, setType] = useSS(null);
-  const [points, setPoints] = useSS(0);
+  const [step, setStep] = useState(1);
+  const [winner, setWinner] = useState(null);
+  const [type, setType] = useState(null);
+  const [points, setPoints] = useState(0);
 
   const titles = {
     1: t('whoWon'),
