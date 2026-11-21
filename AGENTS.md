@@ -1,7 +1,7 @@
 # Working in this repo
 
 Gin Rummy Score Pad: an offline-capable PWA for scoring two-player gin rummy.
-React 19, bundled with esbuild, deployed to GitHub Pages on every push to `master`.
+React 19, bundled with esbuild, deployed to GitHub Pages by hand (or on push to `master` when the repository variable `DEPLOY_ON_PUSH` is `true`).
 
 ## Commands
 

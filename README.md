@@ -67,4 +67,4 @@ npm run e2e          # Playwright end-to-end tests
 npm run screenshots  # regenerates docs/screenshots/ from a scripted demo game
 ```
 
-Built with React 19 and esbuild, and no other framework. Pushing to `master` deploys to GitHub Pages via `.github/workflows/pages.yml`.
+Built with React 19 and esbuild, and no other framework. Deploying to GitHub Pages (`.github/workflows/pages.yml`) is manual: Actions → *Deploy to GitHub Pages* → *Run workflow*. To deploy on every push to `master` again, set the repository variable `DEPLOY_ON_PUSH` to `true`.
