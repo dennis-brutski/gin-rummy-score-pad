@@ -19,7 +19,6 @@
 
 const STORAGE_KEY  = 'gr-counter.v2';
 const LEGACY_KEY   = 'gr-counter.v1';
-const TARGET_SCORE = 100;
 const APP_VERSION  = '1.0.0';
 
 // Scoring rules — these are the user-configurable bonuses. Each game stores
@@ -131,8 +130,7 @@ function migrateFromV1(v1) {
     players: [p0, p1],
     games: game ? [game] : [],
     activeGameId: game ? game.id : null,
-    view: game && game.phase === 'playing' ? 'game' :
-          game && game.phase === 'finished' ? 'game' : 'home',
+    view: game ? 'game' : 'home',
   };
 }
 
@@ -374,13 +372,12 @@ function computeStats(store) {
 // pB's id. UI does the lookup by sorting two ids.
 function computeHeadToHead(store) {
   const out = {};
-  const pid = (p) => p?.id;
   for (const g of store.games) {
     if (g.phase !== 'finished') continue;
     const a = findPlayer(store, g.p0Id);
     const b = findPlayer(store, g.p1Id);
     if (!a || !b) continue;
-    const [lo, hi] = pid(a) < pid(b) ? [a, b] : [b, a];
+    const [lo, hi] = a.id < b.id ? [a, b] : [b, a];
     const key = `${lo.id}|${hi.id}`;
     if (!out[key]) {
       out[key] = { players: [lo, hi], wins: [0, 0], total: 0, lastPlayed: 0 };
@@ -480,7 +477,7 @@ function activeGame(store)       { return findGame(store, store.activeGameId); }
 function gamePlayers(store, g)   { return [findPlayer(store, g.p0Id), findPlayer(store, g.p1Id)]; }
 
 export {
-  TARGET_SCORE, DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
+  DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,

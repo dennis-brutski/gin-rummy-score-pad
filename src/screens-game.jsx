@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT, romanize } from './i18n.js';
 import { Crest, haptic, Suit, Pip } from './ui.jsx';
-import { TARGET_SCORE, dealerOf, gamePlayers } from './state.js';
+import { DEFAULT_RULES, dealerOf, gamePlayers } from './state.js';
 import { ScoreSheet } from './score-sheet.jsx';
 import { MenuSheet } from './menu-sheet.jsx';
 import { EditHandSheet } from './edit-hand-sheet.jsx';
@@ -24,7 +24,7 @@ function GameScreen({ store, game, onScore, onUndo, onExit, onStats,
   const [p0, p1] = gamePlayers(store, game);
   const names = [p0?.name || '—', p1?.name || '—'];
   const [s1, s2] = game.scores;
-  const target = game.rules?.target ?? TARGET_SCORE;
+  const target = game.rules?.target ?? DEFAULT_RULES.target;
   const leader = s1 === s2 ? -1 : (s1 > s2 ? 0 : 1);
   const dealer = dealerOf(game);
 
