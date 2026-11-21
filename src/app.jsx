@@ -222,6 +222,11 @@ function App() {
   const game = activeGame(store);
   const summary = game ? summaryForGame(game) : null;
 
+  // Active game is gone (deleted, or a stale id in storage): go Home.
+  useEA(() => {
+    if (store.view === 'game' && !game) exitToHome();
+  }, [store.view, game]);
+
   return (
     <LocaleContext.Provider value={{ t, locale, setLocale, localeSetting }}>
     <div className={cls}>
@@ -279,7 +284,6 @@ function App() {
           onPlayAgain={playAgain}
           onHome={exitToHome} />
       )}
-      {store.view === 'game' && !game && (() => { exitToHome(); return null; })()}
 
       {/* Toast */}
       {toast && (
