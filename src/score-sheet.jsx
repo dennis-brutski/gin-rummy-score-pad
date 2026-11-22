@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { haptic } from './ui.jsx';
-import { DEFAULT_RULES } from './state.js';
+import { DEFAULT_RULES, handTotal, isValidHand, MAX_HAND_POINTS } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { KnockHint } from './knock-hint.jsx';
 
@@ -190,13 +190,11 @@ function PointEntry({ winnerName, type, points, setPoints, rules, onBack, onConf
     longGin:  t('promptGin'),
     undercut: t('promptUndercut'),
   };
-  const bonus = type === 'gin' ? r.ginBonus
-              : type === 'longGin' ? r.longGinBonus
-              : type === 'undercut' ? r.undercutBonus : 0;
-  const total = points + bonus;
+  const total = handTotal(r, type, points);
+  const bonus = total - points;
   // valid only when there's a number entered (or gin with 0 is acceptable)
-  const valid = points >= 0 && points <= 98 && (type === 'gin' || points > 0);
-  const max = 98;
+  const valid = isValidHand(type, points);
+  const max = MAX_HAND_POINTS;
 
   const onKey = (k) => {
     haptic(3);
