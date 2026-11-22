@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { haptic } from './ui.jsx';
-import { DEFAULT_RULES } from './state.js';
+import { DEFAULT_RULES, handTotal, isValidHand, MAX_HAND_POINTS } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { Key } from './score-sheet.jsx';
 
@@ -27,18 +27,16 @@ function EditHandSheet({ initial, players, rules, onClose, onSave, onDelete }) {
   const [points, setPoints] = useState(initial.points);
   const [confirmDel, setConfirmDel] = useState(false);
 
-  const bonus = type === 'gin' ? r.ginBonus
-              : type === 'longGin' ? r.longGinBonus
-              : type === 'undercut' ? r.undercutBonus : 0;
-  const total = points + bonus;
-  const valid = points >= 0 && points <= 98 && (type === 'gin' || points > 0);
+  const total = handTotal(r, type, points);
+  const bonus = total - points;
+  const valid = isValidHand(type, points);
 
   const onKey = (k) => {
     haptic(3);
     if (k === '⌫') { setPoints(Math.floor(points / 10)); return; }
     if (k === 'C') { setPoints(0); return; }
     const next = points * 10 + Number(k);
-    if (next <= 98) setPoints(next);
+    if (next <= MAX_HAND_POINTS) setPoints(next);
   };
 
   return (
