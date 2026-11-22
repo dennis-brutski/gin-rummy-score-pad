@@ -404,6 +404,59 @@ function renamePlayerInStore(store, id, name) {
   };
 }
 
+// Players who appear in any game are kept, so no game loses a name.
+function deletePlayerInStore(store, id) {
+  const inUse = store.games.some((g) => g.p0Id === id || g.p1Id === id);
+  if (inUse) return store;
+  return { ...store, players: store.players.filter((p) => p.id !== id) };
+}
+
+// Each entry is { id } for an existing player or { name } for a new one.
+// The new game takes a copy of the store's default rules.
+function startGameInStore(store, entryA, entryB) {
+  let players = store.players;
+  const resolveEntry = (entry) => {
+    if (entry.id) return entry.id;
+    const p = newPlayer(entry.name);
+    players = [...players, p];
+    return p.id;
+  };
+  const id0 = resolveEntry(entryA);
+  const id1 = resolveEntry(entryB);
+  const g = newGame(id0, id1, store.rules);
+  return { ...store, players, games: [...store.games, g], activeGameId: g.id, view: 'game' };
+}
+
+// Same players, new game. Inherits the previous game's rules so "Another
+// Round?" keeps the same scoring setup the players were just using.
+function playAgainInStore(store) {
+  const cur = activeGame(store);
+  if (!cur) return { ...store, view: 'home', activeGameId: null };
+  const g = newGame(cur.p0Id, cur.p1Id, cur.rules);
+  return { ...store, games: [...store.games, g], activeGameId: g.id, view: 'game' };
+}
+
+function deleteGameInStore(store, id) {
+  return {
+    ...store,
+    games: store.games.filter((g) => g.id !== id),
+    activeGameId: store.activeGameId === id ? null : store.activeGameId,
+  };
+}
+
+// Apply a game → game function to the active game only.
+function updateActiveGame(store, fn) {
+  return {
+    ...store,
+    games: store.games.map((g) => g.id === store.activeGameId ? fn(g) : g),
+  };
+}
+
+// Global defaults — apply to games started from now on.
+function setDefaultRulesInStore(store, rules) {
+  return { ...store, rules: { ...DEFAULT_RULES, ...rules } };
+}
+
 // Locale codes offered in src/i18n.js (LANGUAGES). Kept here so state.js
 // stays free of React; test/unit/locales.test.js checks they match.
 const LOCALE_CODES = ['en', 'de', 'ru', 'es', 'fr', 'pt', 'it', 'zh', 'ja'];
@@ -484,7 +537,9 @@ export {
   newPlayer, newGame,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
   recomputeGame, editHandInGame, deleteHandInGame, dealerOf, applyRulesToGame,
-  computeHeadToHead, renamePlayerInStore,
+  computeHeadToHead, renamePlayerInStore, deletePlayerInStore,
+  startGameInStore, playAgainInStore, deleteGameInStore, updateActiveGame,
+  setDefaultRulesInStore,
   exportStoreJSON, parseImportJSON, LOCALE_CODES,
   findPlayer, findGame, activeGame, gamePlayers,
 };

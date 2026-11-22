@@ -6,9 +6,9 @@ import { resolveLocale, makeT, LocaleContext } from './i18n.js';
 import {
   DEFAULT_RULES,
   loadStore, saveStore, initialStore,
-  newPlayer, newGame,
   applyHandToGame, undoLastHand, editHandInGame, deleteHandInGame, applyRulesToGame,
-  renamePlayerInStore,
+  renamePlayerInStore, deletePlayerInStore, startGameInStore, playAgainInStore,
+  deleteGameInStore, updateActiveGame, setDefaultRulesInStore,
   exportStoreJSON, parseImportJSON,
   activeGame, summaryForGame,
 } from './state.js';
@@ -106,33 +106,12 @@ function App() {
 
   // ── players ────────────────────────────────────────────────────────────
   const renamePlayer = (id, name) => setStore((s) => renamePlayerInStore(s, id, name));
-  const deletePlayer = (id) => setStore((s) => {
-    const inUse = s.games.some((g) => g.p0Id === id || g.p1Id === id);
-    if (inUse) return s;
-    return { ...s, players: s.players.filter((p) => p.id !== id) };
-  });
+  const deletePlayer = (id) => setStore((s) => deletePlayerInStore(s, id));
 
   // ── games ──────────────────────────────────────────────────────────────
-  const startGameByNames = (entryA, entryB) => {
-    setStore((s) => {
-      let players = s.players;
-      const resolveEntry = (entry) => {
-        if (entry.id) return [players, entry.id];
-        const p = newPlayer(entry.name);
-        return [[...players, p], p.id];
-      };
-      let id0, id1;
-      [players, id0] = resolveEntry(entryA);
-      [players, id1] = resolveEntry(entryB);
-      const g = newGame(id0, id1, s.rules);
-      return { ...s, players, games: [...s.games, g], activeGameId: g.id, view: 'game' };
-    });
-  };
+  const startGameByNames = (entryA, entryB) => setStore((s) => startGameInStore(s, entryA, entryB));
 
-  const mutateActive = (fn) => setStore((s) => ({
-    ...s,
-    games: s.games.map((g) => g.id === s.activeGameId ? fn(g) : g),
-  }));
+  const mutateActive = (fn) => setStore((s) => updateActiveGame(s, fn));
 
   const scoreHand    = (entry)        => mutateActive((g) => applyHandToGame(g, entry));
   const undo         = ()             => mutateActive((g) => undoLastHand(g));
@@ -141,26 +120,12 @@ function App() {
 
   const resumeGame   = (id) => setStore((s) => ({ ...s, activeGameId: id, view: 'game' }));
   const exitToHome   = ()   => setStore((s) => ({ ...s, view: 'home', activeGameId: null }));
-  const deleteGame   = (id) => setStore((s) => ({
-    ...s,
-    games: s.games.filter((g) => g.id !== id),
-    activeGameId: s.activeGameId === id ? null : s.activeGameId,
-  }));
-
-  // Same players, new game. Inherits the previous game's rules so "Another
-  // Round?" keeps the same scoring setup the players were just using.
-  const playAgain = () => {
-    setStore((s) => {
-      const cur = s.games.find((g) => g.id === s.activeGameId);
-      if (!cur) return { ...s, view: 'home', activeGameId: null };
-      const g = newGame(cur.p0Id, cur.p1Id, cur.rules);
-      return { ...s, games: [...s.games, g], activeGameId: g.id, view: 'game' };
-    });
-  };
+  const deleteGame   = (id) => setStore((s) => deleteGameInStore(s, id));
+  const playAgain    = ()   => setStore((s) => playAgainInStore(s));
 
   // ── scoring rules ──────────────────────────────────────────────────────
   // Global defaults — apply to NEW games started from Home.
-  const setRules = (rules) => setStore((s) => ({ ...s, rules: { ...DEFAULT_RULES, ...rules } }));
+  const setRules = (rules) => setStore((s) => setDefaultRulesInStore(s, rules));
   // Per-game override — used from the in-game menu. Re-derives every hand's
   // totalThisHand so the ledger stays mathematically consistent.
   const setActiveGameRules = (rules) =>
