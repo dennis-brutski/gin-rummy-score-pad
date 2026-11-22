@@ -195,6 +195,14 @@ function handTotal(rules, type, points) {
   return points;
 }
 
+// The most raw points a single hand can carry.
+const MAX_HAND_POINTS = 98;
+
+// A hand is legal when its points are in range; only a gin may score 0.
+function isValidHand(type, points) {
+  return points >= 0 && points <= MAX_HAND_POINTS && (type === 'gin' || points > 0);
+}
+
 function applyHandToGame(game, { type, winner, points }) {
   const rules = rulesOf(game);
   const scores = [...game.scores];
@@ -482,6 +490,7 @@ export {
   DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
+  handTotal, MAX_HAND_POINTS, isValidHand,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
   recomputeGame, editHandInGame, deleteHandInGame, dealerOf, applyRulesToGame,
   computeHeadToHead, renamePlayerInStore,
