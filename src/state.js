@@ -196,24 +196,11 @@ function handTotal(rules, type, points) {
 }
 
 function applyHandToGame(game, { type, winner, points }) {
-  const rules = rulesOf(game);
-  const scores = [...game.scores];
-  const boxes  = [...game.boxes];
-  const added = handTotal(rules, type, points);
-  scores[winner] += added;
-  boxes[winner] += 1;
-  const id = rid('h_');
-  const handEntry = { id, deal: game.deal, type, winner, points, totalThisHand: added };
-  const winnerIdx = gameWinner(scores, rules.target);
-  return {
-    ...game,
-    scores, boxes,
-    hands: [...game.hands, handEntry],
-    deal: game.deal + 1,
-    phase: winnerIdx != null ? 'finished' : 'playing',
-    winner: winnerIdx,
-    updatedAt: Date.now(),
+  const entry = {
+    id: rid('h_'), deal: game.deal, type, winner, points,
+    totalThisHand: handTotal(rulesOf(game), type, points),
   };
+  return recomputeGame({ ...game, hands: [...game.hands, entry] });
 }
 
 function undoLastHand(game) {
@@ -221,21 +208,31 @@ function undoLastHand(game) {
   return recomputeGame({ ...game, hands: game.hands.slice(0, -1) });
 }
 
+// The running score after each hand, in order: one [score0, score1] pair per
+// hand. Pure.
+function runningTotals(game) {
+  let s0 = 0, s1 = 0;
+  return game.hands.map((h) => {
+    if (h.winner === 0) s0 += h.totalThisHand; else s1 += h.totalThisHand;
+    return [s0, s1];
+  });
+}
+
 // Recompute a game's running totals from its hands array. Used after a
 // middle-of-game edit/delete so scores/boxes/phase/winner stay in sync. Pure.
 function recomputeGame(game) {
   const rules = rulesOf(game);
-  let s0 = 0, s1 = 0, b0 = 0, b1 = 0;
+  let b0 = 0, b1 = 0;
   let lastDeal = 0;
   for (const h of game.hands) {
-    if (h.winner === 0) { s0 += h.totalThisHand; b0 += 1; }
-    else                { s1 += h.totalThisHand; b1 += 1; }
+    if (h.winner === 0) b0 += 1; else b1 += 1;
     if (h.deal > lastDeal) lastDeal = h.deal;
   }
-  const winnerIdx = gameWinner([s0, s1], rules.target);
+  const scores = runningTotals(game).at(-1) || [0, 0];
+  const winnerIdx = gameWinner(scores, rules.target);
   return {
     ...game,
-    scores: [s0, s1],
+    scores,
     boxes:  [b0, b1],
     deal:   lastDeal + 1,
     phase:  winnerIdx != null ? 'finished' : 'playing',
@@ -483,7 +480,7 @@ export {
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
   applyHandToGame, undoLastHand, summaryForGame, computeStats,
-  recomputeGame, editHandInGame, deleteHandInGame, dealerOf, applyRulesToGame,
+  recomputeGame, runningTotals, editHandInGame, deleteHandInGame, dealerOf, applyRulesToGame,
   computeHeadToHead, renamePlayerInStore,
   exportStoreJSON, parseImportJSON, LOCALE_CODES,
   findPlayer, findGame, activeGame, gamePlayers,
