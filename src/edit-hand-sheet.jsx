@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { haptic } from './ui.jsx';
-import { DEFAULT_RULES } from './state.js';
+import { withDefaultRules } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { Key } from './score-sheet.jsx';
 
@@ -21,7 +21,7 @@ const { useState } = React;
 // ────────────────────────────────────────────────────────────────
 function EditHandSheet({ initial, players, rules, onClose, onSave, onDelete }) {
   const { t } = useT();
-  const r = { ...DEFAULT_RULES, ...(rules || {}) };
+  const r = withDefaultRules(rules);
   const [type, setType]     = useState(initial.type);
   const [winner, setWinner] = useState(initial.winner);
   const [points, setPoints] = useState(initial.points);

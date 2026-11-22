@@ -5,7 +5,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { BrassRule, Suit, haptic } from './ui.jsx';
-import { APP_VERSION, DEFAULT_RULES, gamePlayers } from './state.js';
+import { APP_VERSION, withDefaultRules, gamePlayers } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { ThemePicker } from './theme-picker.jsx';
 import { LanguagePicker, RulesEditor, MenuDivider, MenuRow } from './menu-sheet.jsx';
@@ -235,7 +235,7 @@ function AboutBlock({ rules }) {
       <div className="num" style={{
         fontSize: 9.5, color: 'rgba(255,255,255,0.32)',
         marginTop: 10, letterSpacing: '0.18em', textTransform: 'uppercase',
-      }}>{t('scoringLegend', { ...DEFAULT_RULES, ...rules })}</div>
+      }}>{t('scoringLegend', withDefaultRules(rules))}</div>
     </div>
   );
 }
