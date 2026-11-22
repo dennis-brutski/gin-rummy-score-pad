@@ -144,10 +144,7 @@ function loadStore() {
         ...s,
         view: s.view || (s.activeGameId ? 'game' : 'home'),
         rules: { ...DEFAULT_RULES, ...(s.rules || {}) },
-        // Backfill rules onto pre-rules games. Old games used Undercut +10,
-        // so seed those with LEGACY_RULES rather than the new defaults — that
-        // keeps stored totals arithmetically consistent if a hand is edited.
-        games: (s.games || []).map((g) => g.rules ? g : { ...g, rules: { ...LEGACY_RULES } }),
+        games: (s.games || []).map(loadGame),
       };
       return merged;
     }
@@ -162,6 +159,21 @@ function loadStore() {
     }
   } catch (e) {}
   return initialStore();
+}
+
+// Clean a stored game the way an import does (normalizeGame also seeds
+// pre-rules games with LEGACY_RULES, keeping their totals consistent). Two
+// limits: a game missing its ids is kept exactly as stored, since dropping it
+// would delete it on the next save; and a finished game that already renders
+// keeps its stored totals, so finished games never change (even ones scored
+// before the tie fix).
+function loadGame(g) {
+  if (!isImportableGame(g)) return g;
+  const clean = normalizeGame(g);
+  const kept = { ...clean, scores: g.scores, boxes: g.boxes, phase: g.phase, winner: g.winner };
+  const renders = g.phase === 'finished' && (g.winner === 0 || g.winner === 1)
+    && Array.isArray(g.scores) && Array.isArray(g.boxes) && summaryForGame(kept) != null;
+  return renders ? kept : clean;
 }
 
 function saveStore(s) {
@@ -482,6 +494,39 @@ function exportStoreJSON(store) {
   return JSON.stringify(payload, null, 2);
 }
 
+// A game needs these to be shown at all; anything else is filled in.
+const isImportableGame = (g) => !!(g && g.id && g.p0Id && g.p1Id);
+
+// Clean one stored or imported game: strip unknown fields, coerce types,
+// clamp rules, then re-derive scores, boxes, phase and winner from its hands,
+// since the stored ones may disagree. recomputeGame stamps updatedAt, so the
+// game's own is restored.
+function normalizeGame(g) {
+  const clean = {
+    id: String(g.id),
+    createdAt: Number(g.createdAt) || Date.now(),
+    updatedAt: Number(g.updatedAt) || Date.now(),
+    p0Id: String(g.p0Id), p1Id: String(g.p1Id),
+    scores: Array.isArray(g.scores) ? [Number(g.scores[0]) || 0, Number(g.scores[1]) || 0] : [0, 0],
+    boxes:  Array.isArray(g.boxes)  ? [Number(g.boxes[0])  || 0, Number(g.boxes[1])  || 0] : [0, 0],
+    hands:  Array.isArray(g.hands) ? g.hands.filter(Boolean).map((h) => ({
+      id: String(h.id || rid('h_')),
+      deal: Number(h.deal) || 1,
+      type: ['knock','gin','longGin','undercut'].includes(h.type) ? h.type : 'knock',
+      winner: h.winner === 1 ? 1 : 0,
+      points: Number(h.points) || 0,
+      totalThisHand: Number(h.totalThisHand) || 0,
+      ...(h.edited === true ? { edited: true } : {}),
+    })) : [],
+    deal: Number(g.deal) || 1,
+    dealerStart: g.dealerStart === 1 ? 1 : 0,
+    phase: g.phase === 'finished' ? 'finished' : 'playing',
+    winner: g.winner === 0 || g.winner === 1 ? g.winner : null,
+    rules: cleanRules(g.rules, LEGACY_RULES),
+  };
+  return { ...recomputeGame(clean), updatedAt: clean.updatedAt };
+}
+
 function parseImportJSON(text) {
   let data;
   try { data = JSON.parse(text); }
@@ -494,9 +539,7 @@ function parseImportJSON(text) {
     return { error: 'importMissing' };
   }
   // Strip unknown fields to defend against tampered payloads; rebuild a
-  // clean store shape from scratch. Each game's scores, boxes, phase and
-  // winner are then re-derived from its hands, since the imported ones may
-  // disagree; recomputeGame stamps updatedAt, so the backup's is restored.
+  // clean store shape from scratch.
   const clean = {
     ...initialStore(),
     theme: ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto',
@@ -506,27 +549,7 @@ function parseImportJSON(text) {
       id: String(p.id), name: String(p.name).slice(0, 24),
       createdAt: Number(p.createdAt) || Date.now(),
     })),
-    games: s.games.filter((g) => g && g.id && g.p0Id && g.p1Id).map((g) => ({
-      id: String(g.id),
-      createdAt: Number(g.createdAt) || Date.now(),
-      updatedAt: Number(g.updatedAt) || Date.now(),
-      p0Id: String(g.p0Id), p1Id: String(g.p1Id),
-      scores: Array.isArray(g.scores) ? [Number(g.scores[0]) || 0, Number(g.scores[1]) || 0] : [0, 0],
-      boxes:  Array.isArray(g.boxes)  ? [Number(g.boxes[0])  || 0, Number(g.boxes[1])  || 0] : [0, 0],
-      hands:  Array.isArray(g.hands) ? g.hands.filter(Boolean).map((h) => ({
-        id: String(h.id || rid('h_')),
-        deal: Number(h.deal) || 1,
-        type: ['knock','gin','longGin','undercut'].includes(h.type) ? h.type : 'knock',
-        winner: h.winner === 1 ? 1 : 0,
-        points: Number(h.points) || 0,
-        totalThisHand: Number(h.totalThisHand) || 0,
-      })) : [],
-      deal: Number(g.deal) || 1,
-      dealerStart: g.dealerStart === 1 ? 1 : 0,
-      phase: g.phase === 'finished' ? 'finished' : 'playing',
-      winner: g.winner === 0 || g.winner === 1 ? g.winner : null,
-      rules: cleanRules(g.rules, LEGACY_RULES),
-    })).map((g) => ({ ...recomputeGame(g), updatedAt: g.updatedAt })),
+    games: s.games.filter(isImportableGame).map(normalizeGame),
     activeGameId: null,    // always land on home on import
     view: 'home',
   };
@@ -549,6 +572,6 @@ export {
   computeHeadToHead, renamePlayerInStore, deletePlayerInStore,
   startGameInStore, playAgainInStore, deleteGameInStore, updateActiveGame,
   setDefaultRulesInStore,
-  exportStoreJSON, parseImportJSON, LOCALE_CODES,
+  exportStoreJSON, parseImportJSON, normalizeGame, LOCALE_CODES,
   findPlayer, findGame, activeGame, gamePlayers,
 };
