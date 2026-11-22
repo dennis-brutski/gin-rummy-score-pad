@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT, romanize } from './i18n.js';
 import { Crest, haptic, Suit, Pip } from './ui.jsx';
-import { DEFAULT_RULES, dealerOf, gamePlayers } from './state.js';
+import { DEFAULT_RULES, dealerOf, gamePlayers, runningTotals } from './state.js';
 import { ScoreSheet } from './score-sheet.jsx';
 import { MenuSheet } from './menu-sheet.jsx';
 import { EditHandSheet } from './edit-hand-sheet.jsx';
@@ -255,11 +255,8 @@ function Ledger({ game, names, onPickHand }) {
   }
 
   // running totals along the way
-  let r1 = 0, r2 = 0;
-  const rows = game.hands.map((h) => {
-    if (h.winner === 0) r1 += h.totalThisHand; else r2 += h.totalThisHand;
-    return { ...h, r1, r2 };
-  });
+  const totals = runningTotals(game);
+  const rows = game.hands.map((h, i) => ({ ...h, r1: totals[i][0], r2: totals[i][1] }));
 
   return (
     <div className="parchment" style={{
