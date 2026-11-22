@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT, LANGUAGES } from './i18n.js';
 import { haptic } from './ui.jsx';
-import { DEFAULT_RULES } from './state.js';
+import { DEFAULT_RULES, RULE_BOUNDS, withDefaultRules } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { ThemePicker } from './theme-picker.jsx';
 
@@ -148,22 +148,24 @@ function Stepper({ value, min, max, step, onChange, modified, disabled }) {
 // ─────────────────────────────────────────────────────────────────────────
 function RulesEditor({ rules, onSet, lockTarget }) {
   const { t } = useT();
-  const r = { ...DEFAULT_RULES, ...rules };
+  const r = withDefaultRules(rules);
   const set = (k, v) => onSet({ ...r, [k]: v });
   const resetOne = (k) => { haptic(6); set(k, DEFAULT_RULES[k]); };
   const reset = () => {
     haptic(8);
-    onSet({ ...DEFAULT_RULES, ...(lockTarget ? { target: r.target } : {}) });
+    onSet(withDefaultRules(lockTarget ? { target: r.target } : undefined));
   };
-  const fields = [
-    { key: 'target',        label: t('targetScore'),        min: 50, max: 500, step: 25 },
-    { key: 'ginBonus',      label: t('ginBonusLabel'),       min:  0, max: 100, step:  5 },
-    { key: 'longGinBonus',  label: t('longGinBonusLabel'),   min:  0, max: 100, step:  5 },
-    { key: 'undercutBonus', label: t('undercutBonusLabel'),  min:  0, max: 100, step:  5 },
-    { key: 'boxBonus',      label: t('boxBonusLabel'),       min:  0, max:  50, step:  5 },
-    { key: 'gameBonus',     label: t('gameBonusLabel'),      min:  0, max: 250, step: 25 },
-    { key: 'shutoutBonus',  label: t('shutoutBonusLabel'),   min:  0, max: 300, step: 25 },
-  ];
+  const labels = {
+    target:        t('targetScore'),
+    ginBonus:      t('ginBonusLabel'),
+    longGinBonus:  t('longGinBonusLabel'),
+    undercutBonus: t('undercutBonusLabel'),
+    boxBonus:      t('boxBonusLabel'),
+    gameBonus:     t('gameBonusLabel'),
+    shutoutBonus:  t('shutoutBonusLabel'),
+  };
+  // Bounds and steps come from RULE_BOUNDS so the editor and import clamping agree.
+  const fields = Object.entries(RULE_BOUNDS).map(([key, b]) => ({ key, label: labels[key], ...b }));
   const changedCount = fields.filter((f) => r[f.key] !== DEFAULT_RULES[f.key]).length;
   const dirty = changedCount > 0;
   return (

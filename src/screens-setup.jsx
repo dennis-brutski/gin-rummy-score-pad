@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { BrassRule, haptic } from './ui.jsx';
-import { findPlayer, DEFAULT_RULES } from './state.js';
+import { findPlayer, withDefaultRules } from './state.js';
 
 const { useState } = React;
 
@@ -139,7 +139,7 @@ function SetupScreen({ store, onStart, onDeletePlayer, onRenamePlayer, onBack })
         color: 'rgba(255,255,255,0.4)', fontSize: 11,
         letterSpacing: '0.08em',
       }}>
-        {t('rulesShort', { ...DEFAULT_RULES, ...store.rules })}
+        {t('rulesShort', withDefaultRules(store.rules))}
       </div>
     </div>
   );

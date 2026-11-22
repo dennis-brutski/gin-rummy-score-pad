@@ -48,10 +48,16 @@ const LEGACY_RULES = {
   shutoutBonus:  100,
 };
 
-// Stepper bounds from the Rules editor — used to clamp imported values.
+// Stepper bounds for each Rule. The Rules editor builds its steppers from
+// these, and imports are clamped to them.
 const RULE_BOUNDS = {
-  target: [50, 500], ginBonus: [0, 100], longGinBonus: [0, 100],
-  undercutBonus: [0, 100], boxBonus: [0, 50], gameBonus: [0, 250], shutoutBonus: [0, 300],
+  target:        { min: 50, max: 500, step: 25 },
+  ginBonus:      { min:  0, max: 100, step:  5 },
+  longGinBonus:  { min:  0, max: 100, step:  5 },
+  undercutBonus: { min:  0, max: 100, step:  5 },
+  boxBonus:      { min:  0, max:  50, step:  5 },
+  gameBonus:     { min:  0, max: 250, step: 25 },
+  shutoutBonus:  { min:  0, max: 300, step: 25 },
 };
 
 // Sanitize a rules object field-by-field over a fallback set. Non-numeric
@@ -59,14 +65,17 @@ const RULE_BOUNDS = {
 function cleanRules(r, fallback) {
   const out = { ...fallback };
   if (!r || typeof r !== 'object') return out;
-  for (const k of Object.keys(RULE_BOUNDS)) {
+  for (const [k, { min, max }] of Object.entries(RULE_BOUNDS)) {
     const v = Number(r[k]);
-    if (Number.isFinite(v)) out[k] = Math.min(RULE_BOUNDS[k][1], Math.max(RULE_BOUNDS[k][0], v));
+    if (Number.isFinite(v)) out[k] = Math.min(max, Math.max(min, v));
   }
   return out;
 }
 
-const rulesOf = (g) => ({ ...DEFAULT_RULES, ...(g?.rules || {}) });
+// A Rules object with every missing Rule filled in from the defaults.
+const withDefaultRules = (rules) => ({ ...DEFAULT_RULES, ...(rules || {}) });
+
+const rulesOf = (g) => withDefaultRules(g?.rules);
 
 // ── id helpers ────────────────────────────────────────────────────────────
 const rid = (p) => p + Math.random().toString(36).slice(2, 10);
@@ -90,7 +99,7 @@ const newGame = (p0Id, p1Id, rules) => ({
   dealerStart: Math.random() < 0.5 ? 0 : 1,
   phase: 'playing',     // 'playing' | 'finished'
   winner: null,
-  rules: { ...DEFAULT_RULES, ...(rules || {}) },
+  rules: withDefaultRules(rules),
 });
 
 const initialStore = () => ({
@@ -126,7 +135,7 @@ function migrateFromV1(v1) {
   return {
     version: 2,
     theme: v1.theme || 'auto',
-    rules: { ...DEFAULT_RULES },
+    rules: withDefaultRules(),
     players: [p0, p1],
     games: game ? [game] : [],
     activeGameId: game ? game.id : null,
@@ -143,7 +152,7 @@ function loadStore() {
         ...initialStore(),
         ...s,
         view: s.view || (s.activeGameId ? 'game' : 'home'),
-        rules: { ...DEFAULT_RULES, ...(s.rules || {}) },
+        rules: withDefaultRules(s.rules),
         games: (s.games || []).map(loadGame),
       };
       return merged;
@@ -294,7 +303,7 @@ function deleteHandInGame(game, handId) {
 // — historical hands get rescored with the new bonuses, scores follow.
 function applyRulesToGame(game, newRules) {
   if (!game) return game;
-  const rules = { ...DEFAULT_RULES, ...newRules };
+  const rules = withDefaultRules(newRules);
   const hands = game.hands.map((h) => ({ ...h, totalThisHand: handTotal(rules, h.type, h.points) }));
   return recomputeGame({ ...game, hands, rules });
 }
@@ -471,7 +480,7 @@ function updateActiveGame(store, fn) {
 
 // Global defaults — apply to games started from now on.
 function setDefaultRulesInStore(store, rules) {
-  return { ...store, rules: { ...DEFAULT_RULES, ...rules } };
+  return { ...store, rules: withDefaultRules(rules) };
 }
 
 // Locale codes offered in src/i18n.js (LANGUAGES). Kept here so state.js
@@ -560,7 +569,7 @@ function activeGame(store)       { return findGame(store, store.activeGameId); }
 function gamePlayers(store, g)   { return [findPlayer(store, g.p0Id), findPlayer(store, g.p1Id)]; }
 
 export {
-  DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
+  DEFAULT_RULES, LEGACY_RULES, RULE_BOUNDS, withDefaultRules, rulesOf, APP_VERSION, STORAGE_KEY, LEGACY_KEY,
   initialStore, loadStore, saveStore, migrateFromV1,
   newPlayer, newGame,
   handTotal, MAX_HAND_POINTS, isValidHand,

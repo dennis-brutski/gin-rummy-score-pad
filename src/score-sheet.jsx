@@ -3,7 +3,7 @@
 import React from 'react';
 import { useT } from './i18n.js';
 import { haptic } from './ui.jsx';
-import { DEFAULT_RULES, handTotal, isValidHand, MAX_HAND_POINTS } from './state.js';
+import { withDefaultRules, handTotal, isValidHand, MAX_HAND_POINTS } from './state.js';
 import { Sheet } from './sheet.jsx';
 import { KnockHint } from './knock-hint.jsx';
 
@@ -17,7 +17,7 @@ const { useState } = React;
 // ────────────────────────────────────────────────────────────────
 function ScoreSheet({ players, deal, rules, onClose, onConfirm }) {
   const { t } = useT();
-  const r = { ...DEFAULT_RULES, ...(rules || {}) };
+  const r = withDefaultRules(rules);
   const [step, setStep] = useState(1);
   const [winner, setWinner] = useState(null);
   const [type, setType] = useState(null);
@@ -183,7 +183,7 @@ function OutcomeCard({ label, blurb, ornament, ornamentColor = 'var(--brass)', h
 // ────────────────────────────────────────────────────────────────
 function PointEntry({ winnerName, type, points, setPoints, rules, onBack, onConfirm }) {
   const { t } = useT();
-  const r = { ...DEFAULT_RULES, ...(rules || {}) };
+  const r = withDefaultRules(rules);
   const prompts = {
     knock:    t('promptKnock'),
     gin:      t('promptGin'),
